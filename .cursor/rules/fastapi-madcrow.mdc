@@ -4,7 +4,7 @@ globs:
 alwaysApply: true
 ---
 ---
-description: FastAPI MCP Server Project Rules
+description: FastAPI Madcrow Project Rules
 ruleType: Always
 globs: ["**/*.py"]
 ---
@@ -52,7 +52,7 @@ globs: ["**/*.py"]
 - **Performance**: Minimize blocking I/O; use async/await for database and external API calls
 - **Logging**: Use structured logging for observability and debugging
 
-## FastAPI & MCP Specifics
+## FastAPI Specifics
 
 - **Routes**: Organize routes by feature using APIRouter
 - **Dependencies**: Use FastAPI’s dependency injection for shared logic
@@ -83,31 +83,6 @@ globs: ["**/*.py"]
 - Use dedicated async functions for database and external API operations.
 - Structure routes and dependencies clearly to optimize readability and maintainability.
 
-## MCP
-- for mcp implementation, we'll be using fastmcp(https://gofastmcp.com/getting-started/welcome)
-- We will be building mcp on top of our FastAPI web application
-
-Sample integration as below for Mounting FastMCP in FastAPI Applications
-You can integrate your FastMCP server into existing FastAPI applications by mounting it as a sub-application: We'll be using this approach for prompts
-```
-from fastmcp import FastMCP
-from fastapi import FastAPI
-from starlette.routing import Mount
-
-# Create your FastMCP server with tools, resources, etc.
-mcp = FastMCP("MyServer")
-
-@mcp.tool
-def hello(name: str) -> str:
-    return f"Hello, {name}!"
-
-# Create the ASGI app
-mcp_app = mcp.http_app(path='/mcp')
-
-# Create a FastAPI app and mount the MCP server
-app = FastAPI(lifespan=mcp_app.lifespan)
-app.mount("/mcp-server", mcp_app)
-```
 
 ## Implement search logic
 return {"results": []}
@@ -149,7 +124,6 @@ src/
 
 ### Notes:
 
-* `src/mcp` contains everything specific to the MCP (Model Context Protocol) logic and agent functionality.
 * `tools` and `prompts` under `mcp` modularize agent behaviors and prompt engineering.
 * `models` and `entities` separate external response formats from internal DB schemas.
 * `routes`, `services`, and `utils` follow a typical FastAPI service-oriented structure.

@@ -1,36 +1,35 @@
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+"""Lifespan manager"""
 
+from collections.abc import AsyncGenerator, Callable, Awaitable
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
+
+# Type alias for async startup/shutdown tasks
+AsyncTask = Callable[[], Awaitable[None]]
 
 
 class LifespanManager:
-    def __init__(self, base_app=None):
-        self.base_app = base_app
-        self.startup_tasks = []
-        self.shutdown_tasks = []
+    """Handles app startup and shutdown events."""
 
-    def add_startup_task(self, task):
-        """Add a startup task (async function)"""
-        self.startup_tasks.append(task)
+    def __init__(self) -> None:
+        self._startup_tasks: list[AsyncTask] = []
+        self._shutdown_tasks: list[AsyncTask] = []
 
-    def add_shutdown_task(self, task):
-        """Add a shutdown task (async function)"""
-        self.shutdown_tasks.append(task)
+    def add_startup_task(self, task: AsyncTask) -> None:
+        """Register a function to run on startup."""
+        self._startup_tasks.append(task)
+
+    def add_shutdown_task(self, task: AsyncTask) -> None:
+        """Register a function to run on shutdown."""
+        self._shutdown_tasks.append(task)
 
     @asynccontextmanager
     async def lifespan(self, app: FastAPI) -> AsyncGenerator[None, None]:
-        # Run custom startup tasks
-        for task in self.startup_tasks:
+        """FastAPI lifespan handler."""
+        for task in self._startup_tasks:
             await task()
 
-        # Start base app lifespan if provided
-        if self.base_app is not None:
-            async with self.base_app.lifespan(app):
-                yield
-        else:
-            yield
+        yield  # App runs here
 
-        # Run custom shutdown tasks
-        for task in self.shutdown_tasks:
+        for task in self._shutdown_tasks:
             await task()

@@ -1,14 +1,12 @@
 [project]
-name = "beco-mcp-server"
+name = "beco-madcrow"
 dynamic = ["version"]
-description = "beco mcp server"
+description = "beco madcrow"
 readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [
-    "fastapi-mcp>=0.3.4",
     "fastapi[standard]>=0.104.0",
-    "fastmcp>=2.9.2",
     "pydantic>=2.0.0",
     "pydantic-settings>=2.10.0",
     "python-dotenv>=1.0.0",
@@ -22,7 +20,7 @@ dependencies = [
 version = {attr = "src.__version__"}
 
 [tool.uv]
-default-groups = ["mcp", "db"]
+default-groups = ["ai", "db"]
 package = false
 
 [dependency-groups]
@@ -91,10 +89,10 @@ dev = [
 ]
 
 ############################################################
-# MCP dependencies
+# AI dependencies
 ############################################################
 
-mcp = [
+ai = [
 ]
 
 ############################################################
