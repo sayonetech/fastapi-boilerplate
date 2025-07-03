@@ -3,7 +3,6 @@
 from fastapi import FastAPI
 
 from .health import health_router
-from .locations import locations_router
 
 
 def register_routes(app: FastAPI) -> None:
@@ -15,10 +14,6 @@ def register_routes(app: FastAPI) -> None:
     """
     # Health routes
     app.include_router(health_router, prefix="/api/v1/health", tags=["health"])
-
-    # Locations routes
-    app.include_router(locations_router, prefix="/locations", tags=["locations"])
-
 
 
     # Add more route registrations here as you create new modules

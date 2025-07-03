@@ -31,13 +31,13 @@ def create_fast_api_app_with_configs() -> BecoApp:
     lifespan_manager = LifespanManager()
 
     async def setup_database():
-        print("🔄 Setting up Madcrow database...")
+        print("Setting up Madcrow database...")
 
     async def cleanup_database():
-        print("🧹 Cleaning up Madcrow database...")
+        print("Cleaning up Madcrow database...")
 
     async def stop_background_tasks():
-        print("🛑 Stopping background tasks...")
+        print("Stopping background tasks...")
 
     lifespan_manager.add_startup_task(setup_database)
     lifespan_manager.add_shutdown_task(stop_background_tasks)
@@ -81,7 +81,7 @@ def create_app() -> BecoApp:
 
     end_time = time.perf_counter()
     if madcrow_config.DEBUG:
-        log.info(f"✅ Finished create_app ({round((end_time - start_time) * 1000, 2)} ms)")
+        log.info(f"Finished create_app ({round((end_time - start_time) * 1000, 2)} ms)")
     return app
 
 
@@ -101,11 +101,11 @@ def initialize_extensions(app: BecoApp):
         is_enabled = ext.is_enabled() if hasattr(ext, "is_enabled") else True
         if not is_enabled:
             if madcrow_config.DEBUG:
-                log.info(f"⏭️ Skipped {short_name}")
+                log.info(f"Skipped {short_name}")
             continue
 
         start_time = time.perf_counter()
         ext.init_app(app)
         end_time = time.perf_counter()
         if madcrow_config.DEBUG:
-            log.info(f"✅ Loaded {short_name} ({round((end_time - start_time) * 1000, 2)} ms)")
+            log.info(f"Loaded {short_name} ({round((end_time - start_time) * 1000, 2)} ms)")

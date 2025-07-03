@@ -1,3 +1,3 @@
-"""Beco MCP Server package."""
+"""Beco Madcrow package."""
 
 __version__ = "0.1.0"
