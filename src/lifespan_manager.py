@@ -5,8 +5,8 @@ from fastapi import FastAPI
 
 
 class LifespanManager:
-    def __init__(self, mcp_app):
-        self.mcp_app = mcp_app
+    def __init__(self, base_app=None):
+        self.base_app = base_app
         self.startup_tasks = []
         self.shutdown_tasks = []
 
@@ -24,8 +24,11 @@ class LifespanManager:
         for task in self.startup_tasks:
             await task()
 
-        # Start MCP lifespan
-        async with self.mcp_app.lifespan(app):
+        # Start base app lifespan if provided
+        if self.base_app is not None:
+            async with self.base_app.lifespan(app):
+                yield
+        else:
             yield
 
         # Run custom shutdown tasks

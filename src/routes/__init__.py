@@ -4,7 +4,6 @@ from fastapi import FastAPI
 
 from .health import health_router
 from .locations import locations_router
-from .sites import sites_router
 
 
 def register_routes(app: FastAPI) -> None:
@@ -20,8 +19,7 @@ def register_routes(app: FastAPI) -> None:
     # Locations routes
     app.include_router(locations_router, prefix="/locations", tags=["locations"])
 
-    # Agent routes
-    app.include_router(sites_router, prefix="/site", tags=["site"])
+
 
     # Add more route registrations here as you create new modules
     # Example:

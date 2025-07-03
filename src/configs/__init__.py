@@ -1,3 +1,3 @@
-from .app_config import McpAgentConfig
+from .app_config import MadcrowConfig
 
-mcp_agent_config = McpAgentConfig()
+madcrow_config = MadcrowConfig()

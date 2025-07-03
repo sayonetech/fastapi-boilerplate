@@ -13,7 +13,7 @@ from .packaging import PackagingConfig
 logger = logging.getLogger(__name__)
 
 
-class McpAgentConfig(
+class MadcrowConfig(
     DeploymentConfig,
     EnviornmentConfig,
     # Packaging info
