@@ -1,5 +1,3 @@
-"""Structured logging configuration for the Madcrow backend."""
-
 import logging
 import sys
 from datetime import datetime
@@ -10,22 +8,20 @@ import structlog
 from structlog.types import EventDict, WrappedLogger
 
 from src.configs import madcrow_config
+from fastapi import FastAPI
 
-# Create logs directory if missing
+# --- Constants ---
 LOG_FOLDER = madcrow_config.LOG_FOLDER or "logs"
 LOG_DIR = Path(LOG_FOLDER)
 LOG_DIR.mkdir(exist_ok=True)
 
-# Fields to mask in logs
 SENSITIVE_KEYS = {
     "password", "token", "secret", "authorization",
     "access_token", "refresh_token"
 }
 
-
 def mask_sensitive_data(_: WrappedLogger, __: str, event_dict: EventDict) -> EventDict:
     """Redact sensitive values recursively."""
-
     def recursive_mask(data: Any) -> Any:
         if isinstance(data, dict):
             return {
@@ -41,7 +37,6 @@ def mask_sensitive_data(_: WrappedLogger, __: str, event_dict: EventDict) -> Eve
 
 def setup_logging(log_level: str = "INFO") -> None:
     """Configure standard logging and structlog."""
-
     today_str = datetime.utcnow().strftime("%Y-%m-%d")
     log_filename = LOG_DIR / f"madcrow-backend.{today_str}.log"
 
@@ -81,3 +76,8 @@ def setup_logging(log_level: str = "INFO") -> None:
     )
 
     logging.info("Logging configured successfully.")
+
+
+def init_app(app: FastAPI) -> None:
+    """Entry point to initialize logging as an extension."""
+    setup_logging(log_level="DEBUG" if madcrow_config.DEBUG else "INFO")
