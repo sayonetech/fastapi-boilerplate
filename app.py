@@ -1,20 +1,17 @@
 """Main FastAPI application for Madcrow Backend."""
 
 import time
-import structlog
+import logging
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from src.beco_app import BecoApp
 from src.configs import madcrow_config
-# from src.configs.logging_config import setup_logging
 from src.lifespan_manager import LifespanManager
 from src.middleware.logging_middleware import StructuredLoggingMiddleware
 from src.routes import register_routes
 
-# setup_logging(log_level="DEBUG" if madcrow_config.DEBUG else "INFO")
-
-log = structlog.get_logger(__name__)
+log = logging.getLogger(__name__)
 
 
 def create_fast_api_app_with_configs() -> BecoApp:

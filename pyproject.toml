@@ -86,6 +86,7 @@ dev = [
     "scipy-stubs>=1.15.3.0",
     "pre-commit>=4.2.0",
     "pip-audit>=2.9.0",
+    "bandit[toml]>=1.8.0",
 ]
 
 ############################################################
@@ -101,3 +102,14 @@ ai = [
 
 db = [
 ]
+
+
+
+
+
+
+[tool.bandit]
+exclude_dirs = ["tests", "test", "tests_*", "test_*"]
+skips = ["B101", "B601"]
+targets = ["src"]
+recursive = true
