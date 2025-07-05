@@ -6,11 +6,10 @@ readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [
-    "fastapi[standard]>=0.104.0",
     "pydantic>=2.0.0",
     "pydantic-settings>=2.10.0",
     "python-dotenv>=1.0.0",
-    "structlog>=25.4.0",
+    "pytz>=2025.2",
     "uvicorn[standard]>=0.24.0",
 ]
 # Before adding new dependency, consider place it in
@@ -20,7 +19,7 @@ dependencies = [
 version = {attr = "src.__version__"}
 
 [tool.uv]
-default-groups = ["ai", "db"]
+default-groups = ["api", "ai", "db"]
 package = false
 
 [dependency-groups]
@@ -90,6 +89,16 @@ dev = [
 ]
 
 ############################################################
+# API dependencies
+############################################################
+
+api = [
+    "fastapi[standard]>=0.104.0",
+]
+
+
+
+############################################################
 # AI dependencies
 ############################################################
 
@@ -102,8 +111,6 @@ ai = [
 
 db = [
 ]
-
-
 
 
 

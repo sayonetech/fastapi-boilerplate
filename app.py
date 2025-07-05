@@ -1,17 +1,16 @@
 """Main FastAPI application for Madcrow Backend."""
 
-import time
 import logging
+import time
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from src.beco_app import BecoApp
 from src.configs import madcrow_config
 from src.lifespan_manager import LifespanManager
-from src.middleware.logging_middleware import StructuredLoggingMiddleware
+from src.middleware.logging_middleware import RequestLoggingMiddleware
 from src.routes import register_routes
-
-log = logging.getLogger(__name__)
 
 
 def create_fast_api_app_with_configs() -> BecoApp:
@@ -29,12 +28,15 @@ def create_fast_api_app_with_configs() -> BecoApp:
 
     async def setup_database():
         print("Setting up Madcrow database...")
+        logging.info("Setting up Madcrow database...")
 
     async def cleanup_database():
         print("Cleaning up Madcrow database...")
+        logging.info("Cleaning up Madcrow database...")
 
     async def stop_background_tasks():
         print("Stopping background tasks...")
+        logging.info("Stopping background tasks...")
 
     lifespan_manager.add_startup_task(setup_database)
     lifespan_manager.add_shutdown_task(stop_background_tasks)
@@ -54,11 +56,9 @@ def create_fast_api_app_with_configs() -> BecoApp:
 
 async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Global handler for unhandled exceptions."""
-    log.exception(
-        "Unhandled exception caught",
-        error=str(exc),
-        exc_info=True,
-    )
+
+    logging.exception("Unhandled exception caught", exc_info=True, extra={"error": str(exc)})
+
     return JSONResponse(
         status_code=500,
         content={"detail": "An internal server error occurred."},
@@ -70,7 +70,7 @@ def create_app() -> BecoApp:
     start_time = time.perf_counter()
     app = create_fast_api_app_with_configs()
 
-    app.add_middleware(StructuredLoggingMiddleware)
+    app.add_middleware(RequestLoggingMiddleware)
     app.add_exception_handler(Exception, unhandled_exception_handler)
 
     register_routes(app)
@@ -78,12 +78,12 @@ def create_app() -> BecoApp:
 
     end_time = time.perf_counter()
     if madcrow_config.DEBUG:
-        log.info(f"Finished create_app ({round((end_time - start_time) * 1000, 2)} ms)")
+        logging.info(f"Finished create_app ({round((end_time - start_time) * 1000, 2)} ms)")
     return app
 
 
 def initialize_extensions(app: BecoApp):
-    from src.extensions import ext_compress, ext_cors, ext_set_secretkey, ext_timezone, ext_warnings, ext_logging
+    from src.extensions import ext_compress, ext_cors, ext_logging, ext_set_secretkey, ext_timezone, ext_warnings
 
     extensions = [
         ext_logging,
@@ -99,11 +99,11 @@ def initialize_extensions(app: BecoApp):
         is_enabled = ext.is_enabled() if hasattr(ext, "is_enabled") else True
         if not is_enabled:
             if madcrow_config.DEBUG:
-                log.info(f"Skipped {short_name}")
+                logging.info(f"Skipped {short_name}")
             continue
 
         start_time = time.perf_counter()
         ext.init_app(app)
         end_time = time.perf_counter()
         if madcrow_config.DEBUG:
-            log.info(f"Loaded {short_name} ({round((end_time - start_time) * 1000, 2)} ms)")
+            logging.info(f"Loaded {short_name} ({round((end_time - start_time) * 1000, 2)} ms)")

@@ -1,26 +1,37 @@
 """Middleware for structured request and response logging."""
 
+import logging
 import time
 import uuid
-import logging
+from contextvars import ContextVar
+
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-log = logging.getLogger(__name__)  
+# Context variables for request-specific data
+trace_id_var: ContextVar[str] = ContextVar("trace_id", default="")
+request_id_var: ContextVar[str] = ContextVar("request_id", default="")
+
+log = logging.getLogger(__name__)
 
 
-class StructuredLoggingMiddleware(BaseHTTPMiddleware):
+class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """
-    FastAPI middleware to log requests and responses in a structured format.
+    FastAPI middleware to log HTTP requests and responses with trace ID tracking.
 
     This middleware captures key information about each HTTP request and its
-    corresponding response, including a unique trace ID, timing, and status.
+    corresponding response, including a unique trace ID, timing, status code,
+    and client information. Uses standard Python logging with context variables
+    for request-scoped data.
     """
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        """
+        Process and log a single request/response cycle.
+        """
         # --- Pre-Request ---
         start_time = time.monotonic()
-        trace_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
+        self.bind_context(request)
 
         # --- Process Request ---
         response = await call_next(request)
@@ -28,18 +39,22 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
         # --- Post-Request ---
         duration_ms = (time.monotonic() - start_time) * 1000
 
+        client_ip = request.client.host if request.client else "unknown"
+        trace_id = trace_id_var.get()
         log.info(
-            "Request completed",
-            extra={
-                "trace_id": trace_id,
-                "method": request.method,
-                "path": request.url.path,
-                "query": request.url.query,
-                "status_code": response.status_code,
-                "duration_ms": round(duration_ms, 2),
-                "client_ip": request.client.host if request.client else "unknown",
-                "user_agent": request.headers.get("user-agent", "unknown"),
-            }
+            f"Request completed - {request.method} {request.url.path} - "
+            f"Status: {response.status_code} - Duration: {round(duration_ms, 2)}ms - "
+            f"Client: {client_ip} - Trace ID: {trace_id}"
         )
 
         return response
+
+    def bind_context(self, request: Request) -> None:
+        """
+        Bind request-specific context to the logger.
+
+        This includes a unique trace ID for correlating logs for a single request.
+        """
+        trace_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
+        trace_id_var.set(trace_id)
+        request_id_var.set(trace_id)
