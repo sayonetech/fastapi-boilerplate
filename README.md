@@ -1,4 +1,4 @@
-# Beco MCP Server
+# Beco Madcrow
 
 ## Usage
 
@@ -74,9 +74,12 @@
    uv sync --dev
    ```
 
-## Code Quality: Pre-commit Hooks with Ruff
+## Code Quality: Pre-commit Hooks with Ruff and Bandit
 
-This project uses [pre-commit](https://pre-commit.com/) and [Ruff](https://docs.astral.sh/ruff/) for linting, formatting, and import sorting.
+This project uses [pre-commit](https://pre-commit.com/), [Ruff](https://docs.astral.sh/ruff/), and [Bandit](https://bandit.readthedocs.io/) for comprehensive code quality and security checks.
+
+### Setup
+
 To ensure code quality and consistency, please set up pre-commit hooks after cloning the repository:
 
 ```bash
@@ -86,11 +89,35 @@ uv sync --dev
 # 2. Install pre-commit hooks
 uv run pre-commit install
 
-# 3. (Optional) Run all hooks on all files to check/fix issues
+# 3. Install pre-push hooks (for Bandit security checks)
+uv run pre-commit install --hook-type pre-push
+
+# 4. (Optional) Run all hooks on all files to check/fix issues
 uv run pre-commit run --all-files
 ```
 
-Ruff will automatically check and fix code style, linting, and import order on every commit.
+### Tools
+
+- **Ruff**: Automatically checks and fixes code style, linting, and import order on every commit
+- **Bandit**: Runs security vulnerability scans before each push to identify common security issues
+
+### Manual Checks
+
+You can also run these tools manually:
+
+```bash
+# Run Ruff (formatting and linting)
+uv run ruff format src/
+uv run ruff check src/ --fix
+
+# Run Bandit (security checks)
+uv run bandit -r src/
+# Or use the convenience script
+bash scripts/bandit.sh
+
+# Run all linting and security checks
+bash scripts/lint.sh
+```
 
 ## Running the FastAPI App
 
@@ -113,4 +140,5 @@ This project includes a `Makefile` to simplify common development tasks.
 
 - `make help`: Display a list of all available commands.
 - `make lint`: Run the full suite of code quality checks, including formatting, linting, and security vulnerability scanning.
+- `make bandit`: Run Bandit security vulnerability checks specifically.
 - `make run`: Start the FastAPI development server with hot-reloading.

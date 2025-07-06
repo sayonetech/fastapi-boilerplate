@@ -1,10 +1,13 @@
 """Health check service."""
 
+import logging
 from typing import Annotated
 
 from fastapi import Depends
 
 from ..models.health import HealthResponse
+
+log = logging.getLogger(__name__)
 
 
 class HealthService:
@@ -16,6 +19,7 @@ class HealthService:
 
     async def get_health_status(self) -> HealthResponse:
         """Get general health status."""
+        log.info("Health check: general status requested.")
         return HealthResponse(
             status="healthy",
             message="Service is running normally",
@@ -25,6 +29,7 @@ class HealthService:
     async def get_readiness_status(self) -> HealthResponse:
         """Get readiness status for Kubernetes readiness probe."""
         # Add any readiness checks here (database, external services, etc.)
+        log.info("Health check: readiness probe requested.")
         return HealthResponse(
             status="ready",
             message="Service is ready to receive traffic",

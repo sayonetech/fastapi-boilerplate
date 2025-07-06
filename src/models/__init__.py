@@ -1,10 +1,9 @@
 """Models package."""
 
-from .health import HealthResponse
 from .category import Category
-
+from .health import HealthResponse
 
 __all__ = [
-    "HealthResponse",
     "Category",
+    "HealthResponse",
 ]

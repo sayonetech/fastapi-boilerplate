@@ -16,7 +16,7 @@ SHELL := /bin/bash
 
 # Phony targets are not associated with files. They are used for commands.
 # This prevents `make` from getting confused if a file with the same name as a target exists.
-.PHONY: help lint run
+.PHONY: help lint bandit run
 
 # --- Default Target ---
 
@@ -26,6 +26,7 @@ help:
 	@echo "Available commands:"
 	@echo "  make help      -- Show this help message"
 	@echo "  make lint      -- Run linting, formatting, and security checks"
+	@echo "  make bandit    -- Run Bandit security vulnerability checks"
 	@echo "  make run       -- Run the FastAPI development server"
 
 # --- Main Targets ---
@@ -36,6 +37,13 @@ lint:
 	@echo "--- Running Linter and Security Checks ---"
 	@bash scripts/lint.sh
 	@echo "--- Linting Complete ---"
+
+# The `bandit` target executes the Bandit security script.
+# This script runs security vulnerability checks on Python code.
+bandit:
+	@echo "--- Running Bandit Security Checks ---"
+	@bash scripts/bandit.sh
+	@echo "--- Security Checks Complete ---"
 
 # The `run` target starts the FastAPI application in development mode.
 # It uses `uvicorn` with hot-reloading enabled, so the server will restart on code changes.

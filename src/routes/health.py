@@ -1,6 +1,7 @@
 """Health check routes - class-based version."""
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
+
 from ..models.health import HealthResponse
 from ..services.health import HealthServiceDep
 
@@ -11,12 +12,8 @@ class HealthRouter:
         self.router.add_api_route(
             "/", self.health_check, response_model=HealthResponse, methods=["GET"], operation_id="get_health_status"
         )
-        self.router.add_api_route(
-            "/ready", self.readiness_check, response_model=HealthResponse, methods=["GET"]
-        )
-        self.router.add_api_route(
-            "/live", self.liveness_check, response_model=HealthResponse, methods=["GET"]
-        )
+        self.router.add_api_route("/ready", self.readiness_check, response_model=HealthResponse, methods=["GET"])
+        self.router.add_api_route("/live", self.liveness_check, response_model=HealthResponse, methods=["GET"])
 
     async def _handle_check(self, fn, status_code: int, label: str):
         """
@@ -30,13 +27,13 @@ class HealthRouter:
                 detail=f"{label} check failed: {str(e)}",
             ) from e
 
-    async def health_check(self, health_service: HealthServiceDep = Depends()) -> HealthResponse:
+    async def health_check(self, health_service: HealthServiceDep) -> HealthResponse:
         return await self._handle_check(health_service.get_health_status, 500, "Health")
 
-    async def readiness_check(self, health_service: HealthServiceDep = Depends()) -> HealthResponse:
+    async def readiness_check(self, health_service: HealthServiceDep) -> HealthResponse:
         return await self._handle_check(health_service.get_readiness_status, 503, "Readiness")
 
-    async def liveness_check(self, health_service: HealthServiceDep = Depends()) -> HealthResponse:
+    async def liveness_check(self, health_service: HealthServiceDep) -> HealthResponse:
         return await self._handle_check(health_service.get_liveness_status, 503, "Liveness")
 
 

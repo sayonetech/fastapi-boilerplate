@@ -1,7 +1,8 @@
 """Lifespan manager"""
 
-from collections.abc import AsyncGenerator, Callable, Awaitable
+from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 # Type alias for async startup/shutdown tasks
