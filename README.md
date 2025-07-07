@@ -1,5 +1,7 @@
 # Beco Madcrow
 
+[![Quality Gate Status](https://sonarqube.sayone.team/api/project_badges/measure?project=madcrow-backend&metric=alert_status&token=sqb_28e49476b790a9450fd7cdec5cddda4f8727d262)](https://sonarqube.sayone.team/dashboard?id=madcrow-backend)
+
 ## Usage
 
 1. Start the docker-compose stack
