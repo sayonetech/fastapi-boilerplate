@@ -1,0 +1,70 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs "nodejs"
+    }
+
+    triggers {
+        githubPush()
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: "3"))
+        disableConcurrentBuilds()
+    }
+
+    stages {
+
+        stage('SonarQube Code Analysis') {
+            when {
+                changeRequest(target: 'main')
+            }
+            steps {
+                script {
+                    def scannerHome = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+
+                    slackSend(
+                        channel: 'sonarqube',
+                        color: '#0099ff',
+                        message: "SONAR ANALYSIS STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+                    )
+
+                    withSonarQubeEnv('sonarqube') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
+
+        stage('Check SonarQube Quality Gate') {
+            when {
+                changeRequest(target: 'main')
+            }
+            steps {
+                script {
+                    def qualityGateStatus = waitForQualityGate()
+
+                    if (qualityGateStatus.status == 'OK') {
+                        slackSend(
+                            channel: 'sonarqube',
+                            color: '#00FF00',
+                            message: "SONAR ANALYSIS SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+                        )
+                    } else {
+                        def getURL = readProperties file: './.scannerwork/report-task.txt'
+                        def sonarqubeURL = "${getURL['dashboardUrl']}"
+
+                        slackSend(
+                            channel: 'sonarqube',
+                            color: '#FF0000',
+                            message: "SONAR ANALYSIS FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':\n${sonarqubeURL}"
+                        )
+
+                        error "Quality Gate failed! Status: ${qualityGateStatus.status}"
+                    }
+                }
+            }
+        }
+    }
+}
