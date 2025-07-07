@@ -83,7 +83,15 @@ def create_app() -> BecoApp:
 
 
 def initialize_extensions(app: BecoApp):
-    from src.extensions import ext_compress, ext_cors, ext_logging, ext_set_secretkey, ext_timezone, ext_warnings
+    from src.extensions import (
+        ext_compress,
+        ext_cors,
+        ext_db,
+        ext_logging,
+        ext_set_secretkey,
+        ext_timezone,
+        ext_warnings,
+    )
 
     extensions = [
         ext_logging,
@@ -92,6 +100,7 @@ def initialize_extensions(app: BecoApp):
         ext_set_secretkey,
         ext_timezone,
         ext_warnings,
+        ext_db,
     ]
 
     for ext in extensions:

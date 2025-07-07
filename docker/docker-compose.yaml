@@ -34,6 +34,10 @@ services:
       timeout: 3s
       retries: 60
 
+    # Exposed the PostgreSQL port (currently it is 5432 , change for prduction)
+    ports:
+      - "5432:5432"
+
   # The redis cache.
   redis:
     image: redis:6-alpine

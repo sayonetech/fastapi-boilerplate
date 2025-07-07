@@ -43,6 +43,7 @@ Show help message.
 uv run python madcrow help
 ```
 
+
 ### Database Commands
 
 #### `db-backup`
@@ -62,6 +63,9 @@ uv run python madcrow migrate                    # Run all migrations
 uv run python madcrow migrate --type users       # Run user migrations
 uv run python madcrow migrate -t data            # Run data migrations
 ```
+
+
+
 
 ### System Commands
 
@@ -83,6 +87,16 @@ uv run python madcrow maintenance --tasks cleanup   # Run cleanup only
 uv run python madcrow maintenance -t optimize       # Run optimization only
 uv run python madcrow maintenance -t cleanup,validate # Run specific tasks
 ```
+
+#### `create-admin`
+Create an admin user in the database.
+
+```bash
+uv run python madcrow create-admin
+```
+
+This command will prompt for admin name, email, and password (stored as plain text; hash in production).
+
 
 ## Global Options
 
@@ -132,4 +146,4 @@ madcrow-backend/
 ├── madcrow            # CLI entry point script
 ├── src/               # Application source code
 └── README_COMMANDS.md # This documentation
-``` 
+```

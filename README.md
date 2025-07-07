@@ -9,7 +9,7 @@
    The backend require Redis which can be started together using `docker-compose`.
 
    ```bash
-   Please add code here later
+   sudo docker compose -p madcrow up -d
    ```
 
 2. Copy `.env.example` to `.env`
@@ -53,6 +53,19 @@
    ```bash
    uv run python main.py
    ```
+
+## Database Migrations (Alembic)
+
+To manage database schema changes, use Alembic:
+
+- Create a new migration after changing models:
+  ```bash
+  alembic revision --autogenerate -m "create users table"
+  ```
+- Apply all migrations to update the database:
+  ```bash
+  alembic upgrade head
+  ```
 
 ## Environment Setup
 

@@ -14,4 +14,3 @@ def register_routes(app: FastAPI) -> None:
     """
     # Health routes
     app.include_router(health_router, prefix="/api/v1/health", tags=["health"])
-
