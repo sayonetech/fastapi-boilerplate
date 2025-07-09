@@ -1,22 +1,16 @@
-"""CLI commands for Madcrow Backend using Click."""
-
 import getpass
 import logging
-import sys
-from pathlib import Path
 
 import bcrypt
 import click
 from sqlmodel import Session, create_engine, select
-
-# Add src to path for imports
-sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from src.configs import madcrow_config
 from src.entities.account import Account
 from src.entities.status import AccountStatus
 
 
+#TODO Follow Dify
 def hash_password(password: str) -> str:
     """Hash a password using bcrypt."""
     if not password:
