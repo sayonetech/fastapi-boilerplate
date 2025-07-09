@@ -3,8 +3,8 @@ from uuid import UUID, uuid4
 
 from sqlmodel import Field
 
-from entities.base import Base
-from entities.status import AccountStatus
+from .base import Base
+from .status import AccountStatus
 
 
 class Account(Base, table=True):

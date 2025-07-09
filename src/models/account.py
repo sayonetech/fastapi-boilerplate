@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
 
-from src.entities.status import AccountStatus
+from ..entities.status import AccountStatus
 
 
 class Account(BaseModel):
