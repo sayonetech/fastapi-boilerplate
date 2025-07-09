@@ -54,18 +54,78 @@
    uv run python main.py
    ```
 
-## Database Migrations (Alembic)
+## Database Migration Commands (Alembic)
 
-To manage database schema changes, use Alembic:
+### 1. Initialize Alembic (only once, if not already done)
+```bash
+uv run alembic init src/alembic
+```
+> *Skip this if your project already has an `alembic` directory and config.*
 
-- Create a new migration after changing models:
+### 2. Create the First Migration (Initial Schema)
+```bash
+uv run alembic revision --autogenerate -m "initial"
+```
+> *This generates a migration script based on your current models.*
+
+### 3. Apply Migrations to the Database
+```bash
+uv run alembic upgrade head
+```
+> *This applies all migrations to bring your database schema up to date.*
+
+### 4. Create a New Migration After Changing Models
+```bash
+uv run alembic revision --autogenerate -m "describe your change"
+```
+> *Replace `"describe your change"` with a meaningful message.*
+
+### 5. Apply New Migrations
+```bash
+uv run alembic upgrade head
+```
+
+### 6. Check Current Migration State
+```bash
+uv run alembic current
+```
+
+### 7. View Migration History
+```bash
+uv run alembic history
+```
+
+### 8. Downgrade (Undo) the Last Migration
+```bash
+uv run alembic downgrade -1
+```
+> *You can also downgrade to a specific revision by replacing `-1` with the revision ID.*
+
+---
+
+### Notes for src/ Layout Projects
+- If you use `src.entities` imports, run all Alembic commands with `PYTHONPATH=src`:
   ```bash
-  alembic revision --autogenerate -m "create users table"
+  PYTHONPATH=src uv run alembic <command>
   ```
-- Apply all migrations to update the database:
-  ```bash
-  alembic upgrade head
-  ```
+- If you use just `entities` imports, you can omit `PYTHONPATH=src`.
+
+### .env-based Configuration
+- Alembic will use your `.env` file for database settings if you have configured `env.py` to use your Pydantic `DatabaseConfig`.
+
+---
+
+| Action                        | Command Example                                              |
+|-------------------------------|-------------------------------------------------------------|
+| Initialize Alembic            | `uv run alembic init src/alembic`                           |
+| Create initial migration      | `uv run alembic revision --autogenerate -m "initial"`       |
+| Apply migrations              | `uv run alembic upgrade head`                               |
+| Create new migration          | `uv run alembic revision --autogenerate -m "add users"`     |
+| Apply new migrations          | `uv run alembic upgrade head`                               |
+| Show current migration        | `uv run alembic current`                                    |
+| Show migration history        | `uv run alembic history`                                    |
+| Downgrade last migration      | `uv run alembic downgrade -1`                               |
+
 
 ## Environment Setup
 

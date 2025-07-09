@@ -4,6 +4,7 @@ from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 from alembic.autogenerate import renderers
+from configs.enviornment.db_config import DatabaseConfig
 from entities import Base
 
 # this is the Alembic Config object, which provides
@@ -65,8 +66,10 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    db_config = DatabaseConfig()  # Reads from .env
+    url = db_config.SQLALCHEMY_DATABASE_URI
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        {"sqlalchemy.url": url},
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

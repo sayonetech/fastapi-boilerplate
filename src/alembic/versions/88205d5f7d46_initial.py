@@ -1,19 +1,20 @@
-"""create users table
+"""initial
 
-Revision ID: 7c7f158aacab
+Revision ID: 88205d5f7d46
 Revises:
-Create Date: 2025-07-08 14:48:33.314804
+Create Date: 2025-07-09 14:46:19.563378
 
 """
 
 from collections.abc import Sequence
 
 import sqlalchemy as sa
+import sqlmodel
 
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "7c7f158aacab"
+revision: str = "88205d5f7d46"
 down_revision: str | Sequence[str] | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -26,20 +27,25 @@ def upgrade() -> None:
         "accounts",
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
+        sa.Column("created_by", sa.Uuid(), nullable=True),
         sa.Column("id", sa.Uuid(), nullable=False),
-        sa.Column("name", sa.String(), nullable=False),
-        sa.Column("email", sa.String(), nullable=False),
-        sa.Column("hashed_password", sa.String(), nullable=True),
+        sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("email", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("hashed_password", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column("status", sa.Enum("PENDING", "ACTIVE", "BANNED", "CLOSED", name="accountstatus"), nullable=False),
-        sa.Column("timezone", sa.String(), nullable=True),
+        sa.Column("timezone", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column("last_login_at", sa.DateTime(), nullable=True),
-        sa.Column("last_login_ip", sa.String(), nullable=True),
-        sa.Column("avatar", sa.String(), nullable=True),
+        sa.Column("last_login_ip", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column("avatar", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column("initialized_at", sa.DateTime(), nullable=True),
         sa.Column("is_deleted", sa.Boolean(), nullable=False),
         sa.Column("is_admin", sa.Boolean(), nullable=False),
-        sa.Column("activation_token", sa.String(), nullable=True),
+        sa.Column("activation_token", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column("token_expires_at", sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["created_by"],
+            ["accounts.id"],
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_accounts_email"), "accounts", ["email"], unique=True)

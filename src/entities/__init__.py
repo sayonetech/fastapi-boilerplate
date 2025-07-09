@@ -14,7 +14,6 @@ from .status import (
     WorkspaceRole,
     WorkspaceStatus,
 )
-from .timestamp_mixin import TimestampMixin
 
 __all__ = [
     "Account",
@@ -22,7 +21,6 @@ __all__ = [
     "Base",
     "BillingCycle",
     "SubscriptionStatus",
-    "TimestampMixin",
     "WorkspaceRole",
     "WorkspaceStatus",
 ]

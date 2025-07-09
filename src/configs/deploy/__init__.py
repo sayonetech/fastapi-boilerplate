@@ -19,7 +19,7 @@ class DeploymentConfig(BaseSettings):
 
     BACKEND_APP_BIND_ADDRESS: str = Field(
         description="Host address to bind the backend application to",
-        default="0.0.0.0",
+        default="127.0.0.1",
     )
 
     BACKEND_APP_PORT: int = Field(
