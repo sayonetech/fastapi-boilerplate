@@ -153,10 +153,6 @@ uv run python -c "from src.configs import madcrow_config; print(madcrow_config.s
 | Downgrade last migration      | `uv run alembic downgrade -1`                               |
 | Reset database (dev only)     | `uv run alembic downgrade base && uv run alembic upgrade head` |
 
-## Authentication System
-
-The application includes a complete authentication system using JWT tokens and bcrypt password hashing.
-
 ### Creating Admin Users
 
 Create an admin user with the CLI command:
@@ -169,46 +165,6 @@ This will prompt for:
 - Email address
 - Full name
 - Password (securely hashed with bcrypt)
-
-### Authentication Endpoints
-
-Once the server is running, the following authentication endpoints are available:
-
-- **POST** `/api/v1/auth/login` - User login with email/password
-- **POST** `/api/v1/auth/token` - OAuth2 compatible login endpoint
-- **POST** `/api/v1/auth/logout` - User logout (client-side token removal)
-- **GET** `/api/v1/auth/me` - Get current user information (requires authentication)
-- **GET** `/api/v1/auth/admin/users` - Admin-only endpoint
-
-### Testing Authentication
-
-1. **Login Request**:
-   ```bash
-   curl -X POST "http://localhost:5001/api/v1/auth/login" \
-     -H "Content-Type: application/json" \
-     -d '{"email": "admin@example.com", "password": "your_password"}'
-   ```
-
-2. **Using the Token**:
-   ```bash
-   # Save the token from login response
-   TOKEN="your_jwt_token_here"
-
-   # Access protected endpoint
-   curl -H "Authorization: Bearer $TOKEN" \
-     "http://localhost:5001/api/v1/auth/me"
-   ```
-
-### Authentication Features
-
-- **JWT Tokens**: Stateless authentication with 12-hour expiry
-- **Password Security**: bcrypt hashing with salt
-- **Role-based Access**: Admin and regular user roles
-- **IP Tracking**: Login IP addresses are logged
-- **Account Status**: Active/inactive account management
-- **Secure Headers**: Proper authentication headers and CORS
-
-For detailed authentication documentation, see [AUTH_README.md](AUTH_README.md).
 
 ## Environment Setup
 
