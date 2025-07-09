@@ -144,28 +144,7 @@ api/.env
 api/storage/*
 
 
-docker/volumes/app/storage/*
-docker/volumes/certbot/*
-docker/volumes/db/data/*
-docker/volumes/redis/data/*
-docker/volumes/weaviate/*
-docker/volumes/qdrant/*
-docker/tidb/volumes/*
-docker/volumes/etcd/*
-docker/volumes/minio/*
-docker/volumes/milvus/*
-docker/volumes/chroma/*
-docker/volumes/opensearch/data/*
-docker/volumes/myscale/data/*
-docker/volumes/myscale/log/*
-docker/volumes/unstructured/*
-docker/volumes/pgvector/data/*
-docker/volumes/pgvecto_rs/data/*
-docker/volumes/couchbase/*
-docker/volumes/oceanbase/*
-docker/volumes/plugin_daemon/*
-docker/volumes/matrixone/*
-!docker/volumes/oceanbase/init.d
+docker/volumes/*
 
 docker/nginx/conf.d/default.conf
 docker/nginx/ssl/*

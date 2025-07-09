@@ -1,3 +1,4 @@
+from .db_config import DatabaseConfig
 from .http_config import HttpConfig
 from .logging_config import LoggingConfig
 from .redis_config import RedisConfig
@@ -10,5 +11,6 @@ class EnviornmentConfig(
     LoggingConfig,
     RedisConfig,
     SecurityConfig,
+    DatabaseConfig,
 ):
     pass

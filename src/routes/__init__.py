@@ -14,11 +14,3 @@ def register_routes(app: FastAPI) -> None:
     """
     # Health routes
     app.include_router(health_router, prefix="/api/v1/health", tags=["health"])
-
-    # Add more route registrations here as you create new modules
-    # Example:
-    # from .users import user_router
-    # app.include_router(user_router, prefix="/api/v1/users", tags=["users"])
-
-    # from .auth import auth_router
-    # app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])

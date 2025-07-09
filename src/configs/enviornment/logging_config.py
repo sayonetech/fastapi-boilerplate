@@ -51,4 +51,4 @@ class LoggingConfig(BaseSettings):
             return None
 
         log_date = datetime.now(UTC).strftime("%d-%m-%Y")
-        return os.path.join(self.LOG_FOLDER, f"beco-mcp-{log_date}.log")
+        return os.path.join(self.LOG_FOLDER, f"madcrow-backend-{log_date}.log")
