@@ -48,84 +48,167 @@
    uv sync --dev
    ```
 
-6. Start backend
+6. Set up the database
+
+   ```bash
+   # Apply database migrations
+   uv run alembic upgrade head
+   ```
+
+7. Start backend
 
    ```bash
    uv run python main.py
    ```
 
-## Database Migration Commands (Alembic)
+## Database Setup and Migrations
 
-### 1. Initialize Alembic (only once, if not already done)
-```bash
-uv run alembic init src/alembic
-```
-> *Skip this if your project already has an `alembic` directory and config.*
+### Prerequisites
+1. Ensure PostgreSQL is running and accessible
+2. Create a database named `madcrow` (or update `DB_DATABASE` in `.env`)
+3. Update database credentials in `.env` file
 
-### 2. Create the First Migration (Initial Schema)
-```bash
-uv run alembic revision --autogenerate -m "initial"
-```
-> *This generates a migration script based on your current models.*
+### Database Migration Commands (Alembic)
 
-### 3. Apply Migrations to the Database
-```bash
-uv run alembic upgrade head
-```
-> *This applies all migrations to bring your database schema up to date.*
+The project uses Alembic for database migrations. The migration system is already configured to work with our application's database settings.
 
-### 4. Create a New Migration After Changing Models
-```bash
-uv run alembic revision --autogenerate -m "describe your change"
-```
-> *Replace `"describe your change"` with a meaningful message.*
-
-### 5. Apply New Migrations
-```bash
-uv run alembic upgrade head
-```
-
-### 6. Check Current Migration State
+#### 1. Check Current Migration State
 ```bash
 uv run alembic current
 ```
+> *Shows the current migration revision applied to the database.*
 
-### 7. View Migration History
+#### 2. Apply All Migrations (First Time Setup)
+```bash
+uv run alembic upgrade head
+```
+> *This applies all migrations to bring your database schema up to date. Run this after setting up the database.*
+
+#### 3. Create a New Migration After Changing Models
+```bash
+uv run alembic revision --autogenerate -m "describe your change"
+```
+> *Replace `"describe your change"` with a meaningful message like "add user table" or "add email index".*
+
+#### 4. Apply New Migrations
+```bash
+uv run alembic upgrade head
+```
+> *Apply any new migrations to the database.*
+
+#### 5. View Migration History
 ```bash
 uv run alembic history
 ```
+> *Shows all available migrations and their status.*
 
-### 8. Downgrade (Undo) the Last Migration
+#### 6. Downgrade (Undo) the Last Migration
 ```bash
 uv run alembic downgrade -1
 ```
 > *You can also downgrade to a specific revision by replacing `-1` with the revision ID.*
 
+#### 7. Reset Database (Development Only)
+```bash
+# WARNING: This will delete all data!
+uv run alembic downgrade base  # Remove all migrations
+uv run alembic upgrade head    # Reapply all migrations
+```
+
+### Migration Configuration Notes
+
+- **Automatic Configuration**: Alembic is configured to use your `.env` file database settings
+- **Model Detection**: Migrations automatically detect changes in `src/entities/` models
+- **Database Driver**: Uses `postgresql+psycopg` driver for PostgreSQL
+- **Import Fixes**: Migration files are automatically configured with required imports
+
+### Troubleshooting Migrations
+
+#### Issue: "ModuleNotFoundError" during migration
+**Solution**: Ensure all dependencies are installed:
+```bash
+uv sync --dev
+```
+
+#### Issue: "sqlmodel not found" in migration file
+**Solution**: The migration file needs the sqlmodel import. This is automatically added to new migrations.
+
+#### Issue: Database connection errors
+**Solution**: Check your `.env` file database settings:
+```bash
+# Verify database connection
+uv run python -c "from src.configs import madcrow_config; print(madcrow_config.sqlalchemy_database_uri)"
+```
+
 ---
 
-### Notes for src/ Layout Projects
-- If you use `src.entities` imports, run all Alembic commands with `PYTHONPATH=src`:
-  ```bash
-  PYTHONPATH=src uv run alembic <command>
-  ```
-- If you use just `entities` imports, you can omit `PYTHONPATH=src`.
+### Quick Reference Table
 
-### .env-based Configuration
-- Alembic will use your `.env` file for database settings if you have configured `env.py` to use your Pydantic `DatabaseConfig`.
-
----
-
-| Action                        | Command Example                                              |
+| Action                        | Command                                                      |
 |-------------------------------|-------------------------------------------------------------|
-| Initialize Alembic            | `uv run alembic init src/alembic`                           |
-| Create initial migration      | `uv run alembic revision --autogenerate -m "initial"`       |
-| Apply migrations              | `uv run alembic upgrade head`                               |
-| Create new migration          | `uv run alembic revision --autogenerate -m "add users"`     |
-| Apply new migrations          | `uv run alembic upgrade head`                               |
-| Show current migration        | `uv run alembic current`                                    |
-| Show migration history        | `uv run alembic history`                                    |
+| Check current migration       | `uv run alembic current`                                    |
+| Apply all migrations          | `uv run alembic upgrade head`                               |
+| Create new migration          | `uv run alembic revision --autogenerate -m "description"`   |
+| View migration history        | `uv run alembic history`                                    |
 | Downgrade last migration      | `uv run alembic downgrade -1`                               |
+| Reset database (dev only)     | `uv run alembic downgrade base && uv run alembic upgrade head` |
 
+## Authentication System
+
+The application includes a complete authentication system using JWT tokens and bcrypt password hashing.
+
+### Creating Admin Users
+
+Create an admin user with the CLI command:
+
+```bash
+uv run python command.py create-admin
+```
+
+This will prompt for:
+- Email address
+- Full name
+- Password (securely hashed with bcrypt)
+
+### Authentication Endpoints
+
+Once the server is running, the following authentication endpoints are available:
+
+- **POST** `/api/v1/auth/login` - User login with email/password
+- **POST** `/api/v1/auth/token` - OAuth2 compatible login endpoint
+- **POST** `/api/v1/auth/logout` - User logout (client-side token removal)
+- **GET** `/api/v1/auth/me` - Get current user information (requires authentication)
+- **GET** `/api/v1/auth/admin/users` - Admin-only endpoint
+
+### Testing Authentication
+
+1. **Login Request**:
+   ```bash
+   curl -X POST "http://localhost:5001/api/v1/auth/login" \
+     -H "Content-Type: application/json" \
+     -d '{"email": "admin@example.com", "password": "your_password"}'
+   ```
+
+2. **Using the Token**:
+   ```bash
+   # Save the token from login response
+   TOKEN="your_jwt_token_here"
+
+   # Access protected endpoint
+   curl -H "Authorization: Bearer $TOKEN" \
+     "http://localhost:5001/api/v1/auth/me"
+   ```
+
+### Authentication Features
+
+- **JWT Tokens**: Stateless authentication with 12-hour expiry
+- **Password Security**: bcrypt hashing with salt
+- **Role-based Access**: Admin and regular user roles
+- **IP Tracking**: Login IP addresses are logged
+- **Account Status**: Active/inactive account management
+- **Secure Headers**: Proper authentication headers and CORS
+
+For detailed authentication documentation, see [AUTH_README.md](AUTH_README.md).
 
 ## Environment Setup
 
