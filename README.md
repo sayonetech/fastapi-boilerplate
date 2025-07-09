@@ -9,7 +9,7 @@
    The backend require Redis which can be started together using `docker-compose`.
 
    ```bash
-   sudo docker compose -p madcrow up -d
+   docker compose -p madcrow up -d
    ```
 
 2. Copy `.env.example` to `.env`
