@@ -1,4 +1,3 @@
-# app/extensions/ext_db.py
 from fastapi import FastAPI
 from sqlmodel import create_engine
 
