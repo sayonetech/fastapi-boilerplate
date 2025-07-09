@@ -6,9 +6,9 @@ import logging
 import click
 from sqlmodel import Session, create_engine
 
-from configs.enviornment.db_config import DatabaseConfig
-from entities.account import Account
-from entities.status import AccountStatus
+from src.configs import madcrow_config
+from src.entities.account import Account
+from src.entities.status import AccountStatus
 
 # Configure logging for CLI
 logging.basicConfig(level=logging.INFO)
@@ -27,8 +27,6 @@ def cli(verbose: bool):
 @cli.command()
 def version():
     """Show application version."""
-    from src.configs import madcrow_config
-
     click.echo(f"Madcrow Backend v{madcrow_config.APP_VERSION}")
 
 
@@ -45,10 +43,9 @@ def help():
 def create_admin(email, name):
     """Create an admin user (password stored as plain text; hash in production!)."""
     password = getpass.getpass("Admin password: ")
-    db_config = DatabaseConfig()
     engine = create_engine(
-        db_config.SQLALCHEMY_DATABASE_URI,  # type: ignore
-        **db_config.SQLALCHEMY_ENGINE_OPTIONS,  # type: ignore
+        madcrow_config.sqlalchemy_database_uri,  # type: ignore
+        **madcrow_config.sqlalchemy_engine_options,  # type: ignore
     )
     with Session(engine) as session:
         admin = Account(name=name, email=email, hashed_password=password, is_admin=True, status=AccountStatus.ACTIVE)
