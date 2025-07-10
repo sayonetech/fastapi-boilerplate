@@ -84,6 +84,11 @@ class DatabaseConfig(BaseSettings):
         default=False,
     )
 
+    DB_CONNECTION_TEST_ON_STARTUP: bool = Field(
+        description="If True, test database connection during application startup.",
+        default=True,
+    )
+
     @computed_field
     def sqlalchemy_engine_options(self) -> dict[str, Any]:
         # Parse DB_EXTRAS for 'options'
