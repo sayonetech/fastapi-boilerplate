@@ -153,12 +153,12 @@ class ErrorResponseFactory:
 
         # Add request context if available
         if request:
-            response_data["error"]["path"] = str(request.url.path)
-            response_data["error"]["method"] = request.method
+            response_data["path"] = str(request.url.path)
+            response_data["method"] = request.method
 
         # Add debug info if requested
         if include_debug_info and exception.cause:
-            response_data["error"]["debug"] = {
+            response_data["debug"] = {
                 "cause": str(exception.cause),
                 "cause_type": type(exception.cause).__name__,
             }
