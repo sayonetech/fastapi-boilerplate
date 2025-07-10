@@ -144,17 +144,16 @@ class SecurityHeadersConfig:
         valid_keywords = {"'self'", "'none'", "'unsafe-inline'", "'unsafe-eval'", "'strict-dynamic'", "'unsafe-hashes'"}
 
         parts = directive.split()
-        for part in parts:
-            if (
+        return all(
+            not (
                 part.startswith("'")
                 and part.endswith("'")
                 and part not in valid_keywords
                 and not part.startswith("'nonce-")
                 and not part.startswith("'sha")
-            ):
-                return False
-
-        return True
+            )
+            for part in parts
+        )
 
     @staticmethod
     def get_development_csp() -> str:

@@ -122,28 +122,8 @@ db = [
 ]
 
 ############################################################
-# Flake8 Configuration
+# Flake8 Configuration is in .flake8 file
 ############################################################
-[tool.flake8]
-max-line-length = 88
-extend-ignore = [
-    "E203",  # Whitespace before ':' (conflicts with black)
-    "W503",  # Line break before binary operator (conflicts with black)
-]
-exclude = [
-    ".git",
-    "__pycache__",
-    "build",
-    "dist",
-    "*.egg-info",
-    ".venv",
-    ".env",
-    "migrations",
-    "tests",
-]
-per-file-ignores = [
-    "__init__.py:F401",  # Allow unused imports in __init__.py files
-]
 
 [tool.bandit]
 exclude_dirs = ["tests", "test", "tests_*", "test_*"]

@@ -111,8 +111,9 @@ repos:
           - flake8-bugbear
           - flake8-comprehensions
           - flake8-simplify
-        args: [--max-line-length=100, --extend-ignore=E203, E501]
-        exclude: ^(migrations/|tests/)
+        args: ["--max-line-length=100", "--extend-ignore=E203,E501"]
+        files: ^src/
+        exclude: ^(migrations/|tests/|alembic/)
         stages: [pre-push]
 
   # Check requirements.txt for known vulnerabilities
