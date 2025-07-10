@@ -86,18 +86,28 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # Process the request
         response = await call_next(request)
 
+        # Check if this is a documentation endpoint that needs relaxed CSP
+        is_docs_endpoint = self._is_documentation_endpoint(request.url.path)
+
         # Add security headers to response
         for header_name, header_value in self._security_headers.items():
-            response.headers[header_name] = header_value
+            # Apply relaxed CSP for documentation endpoints in development
+            if header_name == "Content-Security-Policy" and is_docs_endpoint and madcrow_config.DEBUG:
+                response.headers[header_name] = self._get_relaxed_csp_for_docs()
+            else:
+                response.headers[header_name] = header_value
 
         # Handle Server header
+        if "server" in response.headers:
+            del response.headers["server"]  # Always remove default server header
+
+        # Either hide completely or set custom value (mutually exclusive)
         if madcrow_config.SECURITY_HIDE_SERVER_HEADER:
-            # Remove the server header if it exists
-            if "server" in response.headers:
-                del response.headers["server"]
-            # Set custom server header if configured
-            if madcrow_config.SECURITY_SERVER_HEADER_VALUE:
-                response.headers["Server"] = madcrow_config.SECURITY_SERVER_HEADER_VALUE
+            # Keep server header completely hidden
+            pass
+        elif madcrow_config.SECURITY_SERVER_HEADER_VALUE:
+            # Set custom server header only if not hidden
+            response.headers["Server"] = madcrow_config.SECURITY_SERVER_HEADER_VALUE
 
         # Add security-specific headers for development/debugging
         if madcrow_config.DEBUG:
@@ -108,6 +118,29 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     def get_configured_headers(self) -> dict[str, str]:
         """Get the currently configured security headers (for debugging/testing)."""
         return self._security_headers.copy()
+
+    def _is_documentation_endpoint(self, path: str) -> bool:
+        """Check if the request path is for Swagger UI or ReDoc documentation."""
+        docs_paths = ["/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect"]
+        return any(path.startswith(doc_path) for doc_path in docs_paths)
+
+    def _get_relaxed_csp_for_docs(self) -> str:
+        """
+        Get a relaxed Content Security Policy for documentation endpoints.
+
+        Swagger UI and ReDoc need additional permissions to function properly.
+        This is only used in development mode.
+        """
+        return (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data: https:; "
+            "font-src 'self' data:; "
+            "connect-src 'self' ws: wss:; "
+            "frame-src 'self'; "
+            "object-src 'none'"
+        )
 
 
 class SecurityHeadersConfig:

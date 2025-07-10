@@ -97,9 +97,9 @@ Content-Type: application/json
 
 ### 8. Server Header Control
 - **Purpose**: Hides or customizes server information
-- **Configuration**:
-  - `SECURITY_HIDE_SERVER_HEADER`: Hide server header
-  - `SECURITY_SERVER_HEADER_VALUE`: Custom server header value
+- **Configuration** (mutually exclusive options):
+  - `SECURITY_HIDE_SERVER_HEADER`: Completely hide server header (takes precedence)
+  - `SECURITY_SERVER_HEADER_VALUE`: Custom server header value (only used when not hidden)
 
 ## 👥 Client/Frontend Impact
 

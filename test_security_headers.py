@@ -60,12 +60,12 @@ async def test_security_headers():
                     else:
                         missing_headers.append(f"❌ {header_name}: MISSING")
 
-                # Check for server header (should be custom or missing)
+                # Check for server header (should be custom or completely hidden)
                 server_header = response.headers.get("server")
                 if server_header:
                     present_headers.append(f"✅ server: {server_header}")
                 else:
-                    present_headers.append("✅ server: HIDDEN")
+                    present_headers.append("✅ server: HIDDEN (as configured)")
 
                 # Check for debug header in development
                 debug_header = response.headers.get("x-security-headers")

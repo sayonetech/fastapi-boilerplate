@@ -110,10 +110,10 @@ class SecurityConfig(BaseSettings):
 
     # Server Header
     SECURITY_HIDE_SERVER_HEADER: bool = Field(
-        description="Hide or modify the Server header",
+        description="Completely hide the Server header (takes precedence over SECURITY_SERVER_HEADER_VALUE)",
         default=True,
     )
     SECURITY_SERVER_HEADER_VALUE: str = Field(
-        description="Custom Server header value (if not hidden)",
+        description="Custom Server header value (only used when SECURITY_HIDE_SERVER_HEADER=False)",
         default="Madcrow-API",
     )
