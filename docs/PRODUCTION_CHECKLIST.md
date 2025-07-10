@@ -53,7 +53,7 @@ SECURITY_CSP_FRAME_ANCESTORS='none'
 
 #### Required Production Settings
 ```bash
-# Environment
+# Environment (Documentation will be automatically disabled)
 DEPLOY_ENV=PRODUCTION
 DEBUG=false
 

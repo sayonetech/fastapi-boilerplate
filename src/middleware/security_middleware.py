@@ -58,6 +58,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
                 f"frame-ancestors {madcrow_config.SECURITY_CSP_FRAME_ANCESTORS}",
             ]
             headers["Content-Security-Policy"] = "; ".join(csp_directives)
+            log.debug("CSP enabled with configured directives")
 
         # X-Frame-Options
         headers["X-Frame-Options"] = madcrow_config.SECURITY_X_FRAME_OPTIONS
@@ -82,20 +83,21 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         """
         Process request and add security headers to response.
+
+        Documentation endpoints (/docs, /redoc, etc.) are excluded from security headers
+        to ensure they work properly without CSP restrictions.
         """
         # Process the request
         response = await call_next(request)
 
-        # Check if this is a documentation endpoint that needs relaxed CSP
-        is_docs_endpoint = self._is_documentation_endpoint(request.url.path)
+        # Skip security headers entirely for documentation endpoints
+        if self._is_documentation_endpoint(request.url.path):
+            log.debug(f"Skipping security headers for documentation endpoint: {request.url.path}")
+            return response
 
-        # Add security headers to response
+        # Add security headers to all non-documentation responses
         for header_name, header_value in self._security_headers.items():
-            # Apply relaxed CSP for documentation endpoints in development
-            if header_name == "Content-Security-Policy" and is_docs_endpoint and madcrow_config.DEBUG:
-                response.headers[header_name] = self._get_relaxed_csp_for_docs()
-            else:
-                response.headers[header_name] = header_value
+            response.headers[header_name] = header_value
 
         # Handle Server header
         if "server" in response.headers:
@@ -123,24 +125,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         """Check if the request path is for Swagger UI or ReDoc documentation."""
         docs_paths = ["/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect"]
         return any(path.startswith(doc_path) for doc_path in docs_paths)
-
-    def _get_relaxed_csp_for_docs(self) -> str:
-        """
-        Get a relaxed Content Security Policy for documentation endpoints.
-
-        Swagger UI and ReDoc need additional permissions to function properly.
-        This is only used in development mode.
-        """
-        return (
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
-            "style-src 'self' 'unsafe-inline'; "
-            "img-src 'self' data: https:; "
-            "font-src 'self' data:; "
-            "connect-src 'self' ws: wss:; "
-            "frame-src 'self'; "
-            "object-src 'none'"
-        )
 
 
 class SecurityHeadersConfig:

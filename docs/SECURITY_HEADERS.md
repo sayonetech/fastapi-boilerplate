@@ -169,10 +169,18 @@ SECURITY_SERVER_HEADER_VALUE=Madcrow-API
 
 ### Development vs Production
 
-The middleware automatically adjusts based on the `DEPLOY_ENV` setting:
+The application and middleware automatically adjust based on environment settings:
 
-- **Development**: More permissive CSP policies for easier development
-- **Production**: Stricter security policies for maximum protection
+- **Development** (`DEBUG=true` and `DEPLOY_ENV=DEVELOPMENT`):
+  - Documentation endpoints (`/docs`, `/redoc`) are enabled and excluded from security headers
+  - More permissive CSP policies for easier development
+  - Debug headers are added to responses
+
+- **Production** (`DEBUG=false` or `DEPLOY_ENV=PRODUCTION`):
+  - Documentation endpoints are completely disabled (404 responses)
+  - Stricter security policies for maximum protection
+  - Full security header enforcement on all available endpoints
+  - No debug headers
 
 ## 🧪 Testing & Verification
 
@@ -238,9 +246,13 @@ Test your deployed application with these tools:
 
 ```
 src/
-├── configs/enviornment/security_config.py  # Configuration schema
-├── middleware/security_middleware.py       # Middleware implementation
-├── extensions/ext_security.py             # Extension integration
+├── configs/enviornment/security_config.py  # Security configuration schema
+├── middleware/
+│   ├── security_middleware.py             # Security headers middleware
+│   └── logging_middleware.py              # Request logging middleware
+├── extensions/
+│   ├── ext_security.py                    # Security extension integration
+│   └── ext_logging_middleware.py          # Logging middleware extension
 └── routes/v1/security.py                  # Security testing endpoints
 ```
 
@@ -283,9 +295,23 @@ SECURITY_HSTS_PRELOAD=true
 
 ### Common Issues
 
-1. **CSP Violations**: Check browser console for CSP errors
-2. **HSTS Issues**: Clear browser HSTS cache if needed
-3. **Frame Blocking**: Adjust X-Frame-Options for embedding needs
+1. **Swagger UI/ReDoc Not Loading**:
+   - **Cause**: Documentation endpoints are disabled in production
+   - **Solution**: Documentation endpoints are only available in development mode
+   - **Check**: Ensure `DEBUG=true` and `DEPLOY_ENV=DEVELOPMENT`
+   - **Note**: Security headers are completely skipped for documentation endpoints
+
+2. **CSP Violations**:
+   - Check browser console for CSP errors
+   - Review CSP directives for your specific frontend needs
+
+3. **HSTS Issues**:
+   - Clear browser HSTS cache if needed
+   - Use incognito mode for testing
+
+4. **Frame Blocking**:
+   - Adjust X-Frame-Options for embedding needs
+   - Consider using CSP frame-ancestors instead
 
 ### Debug Mode
 
