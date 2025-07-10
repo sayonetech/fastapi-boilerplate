@@ -31,7 +31,7 @@ def init_app(app: BecoApp) -> None:
 
         log.info("Security headers middleware initialized successfully")
 
-    except Exception as e:
+    except Exception:
         log.exception("Failed to initialize security middleware")
         raise
 
@@ -49,9 +49,11 @@ def _validate_security_config() -> None:
 
     # Validate X-Frame-Options
     valid_frame_options = {"DENY", "SAMEORIGIN"}
-    if madcrow_config.SECURITY_X_FRAME_OPTIONS not in valid_frame_options:
-        if not madcrow_config.SECURITY_X_FRAME_OPTIONS.startswith("ALLOW-FROM "):
-            errors.append(f"SECURITY_X_FRAME_OPTIONS must be one of {valid_frame_options} or start with 'ALLOW-FROM '")
+    if (
+        madcrow_config.SECURITY_X_FRAME_OPTIONS not in valid_frame_options
+        and not madcrow_config.SECURITY_X_FRAME_OPTIONS.startswith("ALLOW-FROM ")
+    ):
+        errors.append(f"SECURITY_X_FRAME_OPTIONS must be one of {valid_frame_options} or start with 'ALLOW-FROM '")
 
     # Validate Referrer Policy
     valid_referrer_policies = {

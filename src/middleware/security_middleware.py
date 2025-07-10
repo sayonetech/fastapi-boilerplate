@@ -145,9 +145,14 @@ class SecurityHeadersConfig:
 
         parts = directive.split()
         for part in parts:
-            if part.startswith("'") and part.endswith("'") and part not in valid_keywords:
-                if not part.startswith("'nonce-") and not part.startswith("'sha"):
-                    return False
+            if (
+                part.startswith("'")
+                and part.endswith("'")
+                and part not in valid_keywords
+                and not part.startswith("'nonce-")
+                and not part.startswith("'sha")
+            ):
+                return False
 
         return True
 

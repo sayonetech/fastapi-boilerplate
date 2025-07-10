@@ -38,13 +38,13 @@ class DatabaseExampleService:
                         # Just check if we got any result
                         success = result is not None
                         logger.info(f"Connection test: Got result {result}, considering it successful")
-                except:
+                except Exception:
                     success = result is not None
                     logger.info(f"Connection test: Got result {result}, considering it successful")
 
             logger.info(f"Database connection test: {'passed' if success else 'failed'}")
             return success
-        except Exception as e:
+        except Exception:
             logger.exception("Database connection test failed with exception")
             return False
 
@@ -65,12 +65,9 @@ class DatabaseExampleService:
                 if result is None:
                     return "Unknown"
 
-                # If it's a Row object, try to get the first value
-                if hasattr(result, "__getitem__") and hasattr(result, "_fields"):
-                    # It's a Row object, get the first field
-                    return str(result[0]) if len(result) > 0 else str(result)
-                elif hasattr(result, "__getitem__"):
-                    # It's a tuple or list
+                # If it's a Row object or has indexable items, try to get the first value
+                if hasattr(result, "__getitem__"):
+                    # It's a Row object, tuple, or list - get the first field
                     return str(result[0]) if len(result) > 0 else str(result)
                 else:
                     # It's a simple value
@@ -80,7 +77,7 @@ class DatabaseExampleService:
             db_name_str = extract_value(db_name_result)
 
             return {"version": version_str, "database_name": db_name_str, "status": "connected"}
-        except Exception as e:
+        except Exception:
             logger.exception("Failed to get database info")
             raise
 

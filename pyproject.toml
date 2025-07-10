@@ -26,7 +26,6 @@ default-groups = ["api", "ai", "db"]
 package = false
 
 [dependency-groups]
-
 ############################################################
 # [ Dev ] dependency group
 # Required for development and running tests
@@ -102,24 +101,19 @@ dev = [
 ############################################################
 # API dependencies
 ############################################################
-
 api = [
     "fastapi[standard]>=0.104.0",
 ]
 
-
-
 ############################################################
 # AI dependencies
 ############################################################
-
 ai = [
 ]
 
 ############################################################
 # DB dependencies
 ############################################################
-
 db = [
     "alembic>=1.16.3",
     "psycopg-binary>=3.2.9",
@@ -127,8 +121,29 @@ db = [
     "sqlmodel>=0.0.24",
 ]
 
-
-
+############################################################
+# Flake8 Configuration
+############################################################
+[tool.flake8]
+max-line-length = 88
+extend-ignore = [
+    "E203",  # Whitespace before ':' (conflicts with black)
+    "W503",  # Line break before binary operator (conflicts with black)
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.egg-info",
+    ".venv",
+    ".env",
+    "migrations",
+    "tests",
+]
+per-file-ignores = [
+    "__init__.py:F401",  # Allow unused imports in __init__.py files
+]
 
 [tool.bandit]
 exclude_dirs = ["tests", "test", "tests_*", "test_*"]
