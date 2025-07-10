@@ -256,3 +256,12 @@ This project includes a `Makefile` to simplify common development tasks.
 - `make lint`: Run the full suite of code quality checks, including formatting, linting, and security vulnerability scanning.
 - `make bandit`: Run Bandit security vulnerability checks specifically.
 - `make run`: Start the FastAPI development server with hot-reloading.
+
+## 📚 Documentation
+
+For detailed documentation on specific topics, see the [docs/](./docs/) directory:
+
+- **[Security Headers](./docs/SECURITY_HEADERS.md)** - Comprehensive security headers implementation
+- **[Class-Based Views](./docs/CBV_README.md)** - FastAPI CBV implementation guide
+- **[Database Setup](./docs/DATABASE_SETUP.md)** - Database configuration and migrations
+- **[Documentation Index](./docs/README.md)** - Complete documentation overview

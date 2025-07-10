@@ -89,6 +89,7 @@ def initialize_extensions(app: BecoApp):
         ext_cors,
         ext_db,
         ext_logging,
+        ext_security,
         ext_set_secretkey,
         ext_timezone,
         ext_warnings,
@@ -96,6 +97,7 @@ def initialize_extensions(app: BecoApp):
 
     extensions = [
         ext_logging,
+        ext_security,  # Security headers should be added early
         ext_cors,
         ext_compress,
         ext_set_secretkey,
