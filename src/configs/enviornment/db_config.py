@@ -44,7 +44,7 @@ class DatabaseConfig(BaseSettings):
 
     SQLALCHEMY_DATABASE_URI_SCHEME: str = Field(
         description="Database URI scheme for SQLAlchemy connection.",
-        default="postgresql",
+        default="postgresql+psycopg",  # Use psycopg v3 driver
     )
 
     @computed_field

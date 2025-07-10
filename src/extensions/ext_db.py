@@ -13,8 +13,8 @@ class DBEngine:
         db_config = madcrow_config
 
         # Create database URL using the configuration
-        database_url = db_config.SQLALCHEMY_DATABASE_URI
-        engine_options = db_config.SQLALCHEMY_ENGINE_OPTIONS
+        database_url = db_config.sqlalchemy_database_uri
+        engine_options = db_config.sqlalchemy_engine_options
 
         self._engine = create_engine(  # type: ignore
             database_url,

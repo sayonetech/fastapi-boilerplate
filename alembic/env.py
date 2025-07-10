@@ -1,38 +1,36 @@
+import sys
+from pathlib import Path
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, create_engine
+from sqlalchemy import pool
 
 from alembic import context
-from alembic.autogenerate import renderers
-from configs.enviornment.db_config import DatabaseConfig
-from entities import Base
+
+# Add the project root to Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# Import our application's database configuration and models
+from src.configs import madcrow_config
+from src.entities import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
+# Set the target metadata for autogenerate support
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-
-
-# Custom renderer for SQLModel's AutoString to always use sa.String()
-@renderers.dispatch_for("sqlmodel.sql.sqltypes.AutoString")
-def _render_autostring(type_, autogen_context):
-    return "sa.String()"
 
 
 def run_migrations_offline() -> None:
@@ -47,7 +45,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    # Use our application's database URL
+    url = madcrow_config.sqlalchemy_database_uri
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -66,16 +65,19 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    db_config = DatabaseConfig()  # Reads from .env
-    url = db_config.SQLALCHEMY_DATABASE_URI
-    connectable = engine_from_config(
-        {"sqlalchemy.url": url},
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
+    # Create engine using our application's database configuration
+    connectable = create_engine(
+        madcrow_config.sqlalchemy_database_uri,
+        **madcrow_config.sqlalchemy_engine_options
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
+            compare_server_default=True
+        )
 
         with context.begin_transaction():
             context.run_migrations()
