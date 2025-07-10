@@ -96,6 +96,7 @@ dev = [
     "flake8-bugbear>=24.12.12",
     "flake8-comprehensions>=3.16.0",
     "flake8-simplify>=0.22.0",
+    "types-pytz>=2025.2.0.20250516",
 ]
 
 ############################################################
@@ -130,3 +131,6 @@ exclude_dirs = ["tests", "test", "tests_*", "test_*"]
 skips = ["B101", "B601"]
 targets = ["src"]
 recursive = true
+
+[tool.mypy]
+files = ["src"]

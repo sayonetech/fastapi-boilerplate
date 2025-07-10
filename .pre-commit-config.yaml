@@ -47,16 +47,16 @@ repos:
         additional_dependencies: [".[toml]"]
         stages: [pre-push]
 
-  # Type checking with mypy (disabled due to extensive type issues)
-  # - repo: https://github.com/pre-commit/mirrors-mypy
-  #   rev: v1.16.1
-  #   hooks:
-  #     - id: mypy
-  #       additional_dependencies: [pydantic, fastapi, sqlmodel]
-  #       args:
-  #         [--ignore-missing-imports, --no-strict-optional, --check-untyped-defs]
-  #       exclude: ^(tests/|scripts/|migrations/)
-  #       stages: [pre-push]
+  # Type checking with mypy (lenient configuration for gradual adoption)
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.16.1
+    hooks:
+      - id: mypy
+        additional_dependencies: [pydantic, fastapi, sqlmodel, types-requests]
+        args: ["--config-file=mypy.ini"]
+        files: ^src/
+        exclude: ^(tests/|migrations/|alembic/)
+        stages: [manual] # Run manually with: pre-commit run mypy --hook-stage manual
 
   # Dependency vulnerability auditing (safety disabled due to compatibility issues)
   # - repo: local

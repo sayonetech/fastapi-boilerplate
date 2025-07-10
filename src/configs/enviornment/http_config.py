@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from pydantic import AliasChoices, Field, PositiveFloat, PositiveInt, computed_field
+from pydantic import AliasChoices, Field, PositiveFloat, PositiveInt
 from pydantic_settings import BaseSettings
 
 
@@ -20,7 +20,7 @@ class HttpConfig(BaseSettings):
         default="*",
     )
 
-    @computed_field
+    @property
     def web_api_cors_allow_origins(self) -> list[str]:
         return self.inner_WEB_API_CORS_ALLOW_ORIGINS.split(",")
 
