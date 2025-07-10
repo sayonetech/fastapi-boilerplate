@@ -27,15 +27,16 @@ def create_fast_api_app_with_configs() -> BecoApp:
     lifespan_manager = LifespanManager()
 
     async def setup_database():
-        print("Setting up Madcrow database...")
         logging.info("Setting up Madcrow database...")
 
     async def cleanup_database():
-        print("Cleaning up Madcrow database...")
         logging.info("Cleaning up Madcrow database...")
+        # Import here to avoid circular imports
+        from src.extensions.ext_db import cleanup
+
+        cleanup()
 
     async def stop_background_tasks():
-        print("Stopping background tasks...")
         logging.info("Stopping background tasks...")
 
     lifespan_manager.add_startup_task(setup_database)

@@ -1,4 +1,3 @@
-import os
 from typing import Any
 from urllib.parse import parse_qsl, quote_plus
 
@@ -84,9 +83,9 @@ class DatabaseConfig(BaseSettings):
         default=False,
     )
 
-    RETRIEVAL_SERVICE_EXECUTORS: NonNegativeInt = Field(
-        description="Number of processes for the retrieval service, default to CPU cores.",
-        default=os.cpu_count() or 1,
+    DB_CONNECTION_TEST_ON_STARTUP: bool = Field(
+        description="If True, test database connection during application startup.",
+        default=True,
     )
 
     @computed_field

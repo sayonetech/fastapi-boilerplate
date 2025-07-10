@@ -10,14 +10,15 @@ from src.entities.account import Account
 from src.entities.status import AccountStatus
 
 
-#TODO Follow Dify
+# TODO Follow Dify
 def hash_password(password: str) -> str:
     """Hash a password using bcrypt."""
     if not password:
         raise ValueError("Password cannot be empty")
     salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed.decode('utf-8')
+    hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
+    return hashed.decode("utf-8")
+
 
 # Configure logging for CLI
 logging.basicConfig(level=logging.INFO)
@@ -70,11 +71,7 @@ def create_admin(email, name):
             return
 
         admin = Account(
-            name=name,
-            email=email,
-            hashed_password=hashed_password,
-            is_admin=True,
-            status=AccountStatus.ACTIVE
+            name=name, email=email, hashed_password=hashed_password, is_admin=True, status=AccountStatus.ACTIVE
         )
         session.add(admin)
         session.commit()
