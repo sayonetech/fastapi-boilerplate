@@ -73,7 +73,8 @@ def create_app() -> BecoApp:
     start_time = time.perf_counter()
     app = create_fast_api_app_with_configs()
 
-    app.add_exception_handler(Exception, unhandled_exception_handler)
+    # Note: Exception handling is now managed by ext_error_handling extension
+    # app.add_exception_handler(Exception, unhandled_exception_handler)
 
     register_routes(app)
     initialize_extensions(app)
@@ -89,6 +90,7 @@ def initialize_extensions(app: BecoApp):
         ext_compress,
         ext_cors,
         ext_db,
+        ext_error_handling,
         ext_logging,
         ext_logging_middleware,
         ext_security,
@@ -99,6 +101,7 @@ def initialize_extensions(app: BecoApp):
 
     extensions = [
         ext_logging,
+        ext_error_handling,  # Error handling should be initialized early
         ext_logging_middleware,  # Request logging middleware
         ext_security,  # Security headers should be added early
         ext_cors,
