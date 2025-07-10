@@ -21,10 +21,13 @@
 3. Generate a `SECRET_KEY` in the `.env` file.
 
    bash for Linux
+
    ```bash
    sed -i "/^SECRET_KEY=/c\SECRET_KEY=$(openssl rand -base64 42)" .env
    ```
+
    bash for Mac
+
    ```bash
    secret_key=$(openssl rand -base64 42)
    sed -i '' "/^SECRET_KEY=/c\\
@@ -64,6 +67,7 @@
 ## Database Setup and Migrations
 
 ### Prerequisites
+
 1. Ensure PostgreSQL is running and accessible
 2. Create a database named `madcrow` (or update `DB_DATABASE` in `.env`)
 3. Update database credentials in `.env` file
@@ -73,42 +77,55 @@
 The project uses Alembic for database migrations. The migration system is already configured to work with our application's database settings.
 
 #### 1. Check Current Migration State
+
 ```bash
 uv run alembic current
 ```
-> *Shows the current migration revision applied to the database.*
+
+> _Shows the current migration revision applied to the database._
 
 #### 2. Apply All Migrations (First Time Setup)
+
 ```bash
 uv run alembic upgrade head
 ```
-> *This applies all migrations to bring your database schema up to date. Run this after setting up the database.*
+
+> _This applies all migrations to bring your database schema up to date. Run this after setting up the database._
 
 #### 3. Create a New Migration After Changing Models
+
 ```bash
 uv run alembic revision --autogenerate -m "describe your change"
 ```
-> *Replace `"describe your change"` with a meaningful message like "add user table" or "add email index".*
+
+> _Replace `"describe your change"` with a meaningful message like "add user table" or "add email index"._
 
 #### 4. Apply New Migrations
+
 ```bash
 uv run alembic upgrade head
 ```
-> *Apply any new migrations to the database.*
+
+> _Apply any new migrations to the database._
 
 #### 5. View Migration History
+
 ```bash
 uv run alembic history
 ```
-> *Shows all available migrations and their status.*
+
+> _Shows all available migrations and their status._
 
 #### 6. Downgrade (Undo) the Last Migration
+
 ```bash
 uv run alembic downgrade -1
 ```
-> *You can also downgrade to a specific revision by replacing `-1` with the revision ID.*
+
+> _You can also downgrade to a specific revision by replacing `-1` with the revision ID._
 
 #### 7. Reset Database (Development Only)
+
 ```bash
 # WARNING: This will delete all data!
 uv run alembic downgrade base  # Remove all migrations
@@ -125,16 +142,21 @@ uv run alembic upgrade head    # Reapply all migrations
 ### Troubleshooting Migrations
 
 #### Issue: "ModuleNotFoundError" during migration
+
 **Solution**: Ensure all dependencies are installed:
+
 ```bash
 uv sync --dev
 ```
 
 #### Issue: "sqlmodel not found" in migration file
+
 **Solution**: The migration file needs the sqlmodel import. This is automatically added to new migrations.
 
 #### Issue: Database connection errors
+
 **Solution**: Check your `.env` file database settings:
+
 ```bash
 # Verify database connection
 uv run python -c "from src.configs import madcrow_config; print(madcrow_config.sqlalchemy_database_uri)"
@@ -144,14 +166,14 @@ uv run python -c "from src.configs import madcrow_config; print(madcrow_config.s
 
 ### Quick Reference Table
 
-| Action                        | Command                                                      |
-|-------------------------------|-------------------------------------------------------------|
-| Check current migration       | `uv run alembic current`                                    |
-| Apply all migrations          | `uv run alembic upgrade head`                               |
-| Create new migration          | `uv run alembic revision --autogenerate -m "description"`   |
-| View migration history        | `uv run alembic history`                                    |
-| Downgrade last migration      | `uv run alembic downgrade -1`                               |
-| Reset database (dev only)     | `uv run alembic downgrade base && uv run alembic upgrade head` |
+| Action                    | Command                                                        |
+| ------------------------- | -------------------------------------------------------------- |
+| Check current migration   | `uv run alembic current`                                       |
+| Apply all migrations      | `uv run alembic upgrade head`                                  |
+| Create new migration      | `uv run alembic revision --autogenerate -m "description"`      |
+| View migration history    | `uv run alembic history`                                       |
+| Downgrade last migration  | `uv run alembic downgrade -1`                                  |
+| Reset database (dev only) | `uv run alembic downgrade base && uv run alembic upgrade head` |
 
 ### Creating Admin Users
 
@@ -162,6 +184,7 @@ uv run python command.py create-admin
 ```
 
 This will prompt for:
+
 - Email address
 - Full name
 - Password (securely hashed with bcrypt)
@@ -169,6 +192,7 @@ This will prompt for:
 ## Environment Setup
 
 1. Copy the example environment file:
+
    ```bash
    cp .env.example .env
    ```
@@ -248,7 +272,9 @@ uvicorn app:app --reload
 - The API docs (Swagger UI) will be available at: http://localhost:8000/docs
 - The health endpoint: http://localhost:8000/api/v1/health
 
-## Makefile Commands
+## 🔧 Development Tools
+
+### Makefile Commands
 
 This project includes a `Makefile` to simplify common development tasks.
 
@@ -256,6 +282,122 @@ This project includes a `Makefile` to simplify common development tasks.
 - `make lint`: Run the full suite of code quality checks, including formatting, linting, and security vulnerability scanning.
 - `make bandit`: Run Bandit security vulnerability checks specifically.
 - `make run`: Start the FastAPI development server with hot-reloading.
+
+### 🪝 Pre-commit Hooks
+
+This project uses comprehensive pre-commit hooks to ensure code quality, security, and consistency. The hooks are automatically run before each commit and push.
+
+#### **Installation**
+
+Pre-commit hooks are automatically installed when you run:
+
+```bash
+uv sync --dev
+uv run pre-commit install
+```
+
+#### **Hook Categories**
+
+**🔍 Code Quality & Formatting**
+
+- **Ruff**: Fast Python linter and formatter
+- **isort**: Import sorting and organization
+- **autoflake**: Remove unused imports and variables
+- **pyupgrade**: Upgrade Python syntax to newer versions
+- **Prettier**: Format YAML, Markdown, and JSON files
+
+**🔒 Security & Vulnerability Scanning**
+
+- **Bandit**: Security vulnerability scanner for Python
+- **Safety**: Dependency vulnerability auditing
+- **detect-secrets**: Prevent secrets from being committed
+- **pip-audit**: Check for known vulnerabilities in dependencies
+
+**📝 Type Checking & Code Analysis**
+
+- **MyPy**: Static type checking
+- **Flake8**: Code style and complexity analysis
+  - flake8-bugbear: Additional bug and design problem checks
+  - flake8-comprehensions: List/dict comprehension checks
+  - flake8-simplify: Code simplification suggestions
+
+**📋 File & Syntax Validation**
+
+- **File format checks**: JSON, YAML, TOML, XML validation
+- **Syntax checks**: Python AST validation
+- **File integrity**: Large file detection, merge conflict detection
+- **Dockerfile linting**: Hadolint for Docker best practices
+
+#### **Hook Execution Stages**
+
+**Pre-commit (runs on every commit):**
+
+- File format validation
+- Code formatting (Ruff, isort, Prettier)
+- Secret detection
+- Basic syntax checks
+
+**Pre-push (runs before pushing):**
+
+- Type checking (MyPy)
+- Security scanning (Bandit, Safety)
+- Comprehensive linting (Flake8)
+- Dependency auditing (pip-audit)
+
+#### **Manual Execution**
+
+```bash
+# Run all pre-commit hooks manually
+uv run pre-commit run --all-files
+
+# Run specific hook
+uv run pre-commit run ruff --all-files
+uv run pre-commit run mypy --all-files
+
+# Run only pre-push hooks
+uv run pre-commit run --hook-stage pre-push --all-files
+
+# Update hook versions
+uv run pre-commit autoupdate
+```
+
+#### **Configuration Files**
+
+- **`.pre-commit-config.yaml`**: Hook configuration
+- **`.secrets.baseline`**: Baseline for secret detection
+- **`pyproject.toml`**: Tool configurations (Ruff, Bandit, etc.)
+
+#### **Bypassing Hooks (Use Sparingly)**
+
+```bash
+# Skip pre-commit hooks (not recommended)
+git commit --no-verify -m "commit message"
+
+# Skip specific hooks
+SKIP=mypy git commit -m "commit message"
+```
+
+#### **Troubleshooting**
+
+**Common Issues:**
+
+1. **Hook failures**: Check the output and fix the reported issues
+2. **Type checking errors**: Add type hints or update MyPy configuration
+3. **Security warnings**: Review and address or add to ignore lists
+4. **Dependency conflicts**: Update dependencies or adjust hook versions
+
+**Getting Help:**
+
+```bash
+# Check hook status
+uv run pre-commit --version
+
+# Validate configuration
+uv run pre-commit validate-config
+
+# Clean hook cache
+uv run pre-commit clean
+```
 
 ## 📚 Documentation
 

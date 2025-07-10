@@ -47,6 +47,7 @@ Content-Type: application/json
 ### 🔍 Detailed Header Explanations
 
 ### 1. HTTP Strict Transport Security (HSTS)
+
 - **Purpose**: Enforces HTTPS connections and prevents protocol downgrade attacks
 - **Header**: `Strict-Transport-Security`
 - **Configuration**:
@@ -56,6 +57,7 @@ Content-Type: application/json
   - `SECURITY_HSTS_PRELOAD`: Enable HSTS preload list inclusion
 
 ### 2. Content Security Policy (CSP)
+
 - **Purpose**: Prevents XSS attacks by controlling resource loading
 - **Header**: `Content-Security-Policy`
 - **Configuration**:
@@ -69,26 +71,31 @@ Content-Type: application/json
   - `SECURITY_CSP_FRAME_ANCESTORS`: Frame ancestors policy
 
 ### 3. X-Frame-Options
+
 - **Purpose**: Prevents clickjacking attacks
 - **Header**: `X-Frame-Options`
 - **Configuration**: `SECURITY_X_FRAME_OPTIONS` (default: DENY)
 
 ### 4. X-Content-Type-Options
+
 - **Purpose**: Prevents MIME sniffing attacks
 - **Header**: `X-Content-Type-Options: nosniff`
 - **Configuration**: `SECURITY_X_CONTENT_TYPE_OPTIONS`
 
 ### 5. X-XSS-Protection
+
 - **Purpose**: Legacy XSS protection (for older browsers)
 - **Header**: `X-XSS-Protection: 1; mode=block`
 - **Configuration**: `SECURITY_X_XSS_PROTECTION`
 
 ### 6. Referrer-Policy
+
 - **Purpose**: Controls referrer information sent with requests
 - **Header**: `Referrer-Policy`
 - **Configuration**: `SECURITY_REFERRER_POLICY` (default: strict-origin-when-cross-origin)
 
 ### 7. Permissions-Policy
+
 - **Purpose**: Controls browser features and APIs
 - **Header**: `Permissions-Policy`
 - **Configuration**:
@@ -96,6 +103,7 @@ Content-Type: application/json
   - `SECURITY_PERMISSIONS_POLICY`: Policy directives
 
 ### 8. Server Header Control
+
 - **Purpose**: Hides or customizes server information
 - **Configuration** (mutually exclusive options):
   - `SECURITY_HIDE_SERVER_HEADER`: Completely hide server header (takes precedence)
@@ -108,29 +116,33 @@ Content-Type: application/json
 These security headers will affect how browsers handle your frontend applications:
 
 #### Content Security Policy (CSP) Impact
+
 - **Inline Scripts**: `'unsafe-inline'` allows inline JavaScript (development mode)
 - **External Resources**: Only allowed from `'self'` and specified domains
 - **Images**: Can load from `'self'`, `data:` URLs, and HTTPS sources
 - **Fonts**: Only from `'self'` by default
 
 #### Frame Embedding
+
 - **X-Frame-Options: DENY**: Your API responses cannot be embedded in iframes
 - **CSP frame-ancestors 'none'**: Reinforces iframe blocking
 
 #### HTTPS Enforcement
+
 - **HSTS**: Browsers will automatically redirect HTTP to HTTPS after first visit
 - **Secure Cookies**: Cookies should be marked as `Secure` in production
 
 ### 🚨 Common Frontend Issues & Solutions
 
 1. **CSP Violations**: Check browser console for blocked resources
+
    ```javascript
    // ❌ This might be blocked by CSP
-   eval('some code');
+   eval("some code");
 
    // ✅ Use proper script loading instead
-   const script = document.createElement('script');
-   script.src = '/path/to/script.js';
+   const script = document.createElement("script");
+   script.src = "/path/to/script.js";
    ```
 
 2. **Mixed Content**: Ensure all resources use HTTPS in production
@@ -238,6 +250,7 @@ curl http://localhost:5001/api/v1/security/recommendations
 ### 5. Online Tools
 
 Test your deployed application with these tools:
+
 - [Security Headers](https://securityheaders.com/)
 - [Mozilla Observatory](https://observatory.mozilla.org/)
 - [CSP Evaluator](https://csp-evaluator.withgoogle.com/)
