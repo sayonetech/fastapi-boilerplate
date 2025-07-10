@@ -84,11 +84,6 @@ class DatabaseConfig(BaseSettings):
         default=False,
     )
 
-    RETRIEVAL_SERVICE_EXECUTORS: NonNegativeInt = Field(
-        description="Number of processes for the retrieval service, default to CPU cores.",
-        default=os.cpu_count() or 1,
-    )
-
     @computed_field
     def sqlalchemy_engine_options(self) -> dict[str, Any]:
         # Parse DB_EXTRAS for 'options'

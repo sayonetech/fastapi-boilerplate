@@ -26,3 +26,8 @@ class DeploymentConfig(BaseSettings):
         description="Port number to bind the backend application to",
         default=5001,
     )
+
+    GUNICORN_TIMEOUT: int = Field(
+        description="Timeout in seconds for Gunicorn worker processes",
+        default=360,
+    )

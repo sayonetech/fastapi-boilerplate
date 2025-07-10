@@ -14,19 +14,8 @@ class HttpConfig(BaseSettings):
         default=False,
     )
 
-    inner_CONSOLE_CORS_ALLOW_ORIGINS: str = Field(
-        description="Comma-separated list of allowed origins for CORS in the console",
-        validation_alias=AliasChoices("CONSOLE_CORS_ALLOW_ORIGINS", "CONSOLE_WEB_URL"),
-        default="",
-    )
-
-    @computed_field
-    @property
-    def console_cors_allow_origins(self) -> list[str]:
-        return self.inner_CONSOLE_CORS_ALLOW_ORIGINS.split(",")
-
     inner_WEB_API_CORS_ALLOW_ORIGINS: str = Field(
-        description="",
+        description="Comma-separated list of allowed origins for CORS in the web API",
         validation_alias=AliasChoices("WEB_API_CORS_ALLOW_ORIGINS"),
         default="*",
     )
