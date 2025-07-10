@@ -40,8 +40,6 @@ class DBEngine:
             )
 
             # Test the connection if enabled
-            print("inside init app")
-            print(db_config.DB_CONNECTION_TEST_ON_STARTUP)
             if db_config.DB_CONNECTION_TEST_ON_STARTUP:
                 connection_test_passed = self._test_connection()
 
