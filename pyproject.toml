@@ -26,7 +26,6 @@ default-groups = ["api", "ai", "db"]
 package = false
 
 [dependency-groups]
-
 ############################################################
 # [ Dev ] dependency group
 # Required for development and running tests
@@ -97,29 +96,25 @@ dev = [
     "flake8-bugbear>=24.12.12",
     "flake8-comprehensions>=3.16.0",
     "flake8-simplify>=0.22.0",
+    "types-pytz>=2025.2.0.20250516",
 ]
 
 ############################################################
 # API dependencies
 ############################################################
-
 api = [
     "fastapi[standard]>=0.104.0",
 ]
 
-
-
 ############################################################
 # AI dependencies
 ############################################################
-
 ai = [
 ]
 
 ############################################################
 # DB dependencies
 ############################################################
-
 db = [
     "alembic>=1.16.3",
     "psycopg-binary>=3.2.9",
@@ -127,11 +122,15 @@ db = [
     "sqlmodel>=0.0.24",
 ]
 
-
-
+############################################################
+# Flake8 Configuration is in .flake8 file
+############################################################
 
 [tool.bandit]
 exclude_dirs = ["tests", "test", "tests_*", "test_*"]
 skips = ["B101", "B601"]
 targets = ["src"]
 recursive = true
+
+[tool.mypy]
+files = ["src"]

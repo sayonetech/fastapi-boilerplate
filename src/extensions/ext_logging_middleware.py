@@ -29,7 +29,7 @@ def init_app(app: BecoApp) -> None:
 
         log.info("Request logging middleware initialized successfully")
 
-    except Exception as e:
+    except Exception:
         log.exception("Failed to initialize request logging middleware")
         raise
 

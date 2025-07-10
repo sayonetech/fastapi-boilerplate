@@ -47,16 +47,16 @@ repos:
         additional_dependencies: [".[toml]"]
         stages: [pre-push]
 
-  # Type checking with mypy (disabled due to extensive type issues)
-  # - repo: https://github.com/pre-commit/mirrors-mypy
-  #   rev: v1.16.1
-  #   hooks:
-  #     - id: mypy
-  #       additional_dependencies: [pydantic, fastapi, sqlmodel]
-  #       args:
-  #         [--ignore-missing-imports, --no-strict-optional, --check-untyped-defs]
-  #       exclude: ^(tests/|scripts/|migrations/)
-  #       stages: [pre-push]
+  # Type checking with mypy (lenient configuration for gradual adoption)
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.16.1
+    hooks:
+      - id: mypy
+        additional_dependencies: [pydantic, fastapi, sqlmodel, types-requests]
+        args: ["--config-file=mypy.ini"]
+        files: ^src/
+        exclude: ^(tests/|migrations/|alembic/)
+        stages: [manual] # Run manually with: pre-commit run mypy --hook-stage manual
 
   # Dependency vulnerability auditing (safety disabled due to compatibility issues)
   # - repo: local
@@ -102,18 +102,19 @@ repos:
         exclude: ^(\.vscode/|\.github/)
         stages: [pre-commit]
 
-  # Check for common Python anti-patterns (disabled due to extensive formatting issues)
-  # - repo: https://github.com/PyCQA/flake8
-  #   rev: 7.3.0
-  #   hooks:
-  #     - id: flake8
-  #       additional_dependencies:
-  #         - flake8-bugbear
-  #         - flake8-comprehensions
-  #         - flake8-simplify
-  #       args: [--max-line-length=88, --extend-ignore=E203]
-  #       exclude: ^(migrations/|tests/)
-  #       stages: [pre-push]
+  # Check for common Python anti-patterns
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-bugbear
+          - flake8-comprehensions
+          - flake8-simplify
+        args: ["--max-line-length=100", "--extend-ignore=E203,E501"]
+        files: ^src/
+        exclude: ^(migrations/|tests/|alembic/)
+        stages: [pre-push]
 
   # Check requirements.txt for known vulnerabilities
   - repo: local

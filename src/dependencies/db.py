@@ -28,7 +28,7 @@ def get_session() -> Generator[Session, None, None]:
             try:
                 yield session
                 logger.debug("Database session completed successfully")
-            except Exception as e:
+            except Exception:
                 logger.exception("Database session error")
                 session.rollback()
                 # Re-raise the original exception so route handlers can catch it

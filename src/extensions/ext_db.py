@@ -100,7 +100,7 @@ class DBEngine:
                             # Just check if we got any result
                             success = True
                             logger.debug(f"Got non-integer result {result}, considering successful")
-                    except:
+                    except Exception:
                         success = True
                         logger.debug(f"Got result {result}, considering successful")
 
@@ -110,7 +110,7 @@ class DBEngine:
                     logger.error(f"Database connection test failed: unexpected result {result}")
 
                 return success
-        except Exception as e:
+        except Exception:
             logger.exception("Database connection test failed")
             logger.debug(
                 f"Connection details: {madcrow_config.DB_HOST}:{madcrow_config.DB_PORT}/{madcrow_config.DB_DATABASE}"
@@ -153,7 +153,7 @@ class DBEngine:
                             # Just check if we got any result
                             healthy = True
                             logger.debug(f"Health check: Got result {result}, considering healthy")
-                    except:
+                    except Exception:
                         healthy = True
                         logger.debug(f"Health check: Got result {result}, considering healthy")
 
@@ -189,7 +189,7 @@ def init_app(app: BecoApp) -> None:
     try:
         db_engine.init_app(app)
         logger.info("Database extension initialized successfully")
-    except Exception as e:
+    except Exception:
         logger.exception("Failed to initialize database extension")
         raise
 
