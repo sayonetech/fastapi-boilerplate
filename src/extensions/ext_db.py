@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
@@ -26,8 +27,8 @@ class DBEngine:
             db_config = madcrow_config
 
             # Create database URL using the configuration
-            database_url = db_config.sqlalchemy_database_uri
-            engine_options = db_config.sqlalchemy_engine_options
+            database_url: str = db_config.sqlalchemy_database_uri  # type: ignore
+            engine_options: dict[str, Any] = db_config.sqlalchemy_engine_options  # type: ignore
 
             logger.info(f"Connecting to database: {db_config.DB_HOST}:{db_config.DB_PORT}/{db_config.DB_DATABASE}")
             logger.debug(f"Engine options: {engine_options}")
@@ -77,7 +78,7 @@ class DBEngine:
             logger.debug("Testing database connection...")
             with Session(self._engine) as session:
                 # Simple connection test
-                result = session.exec(text("SELECT 1")).first()
+                result = session.execute(text("SELECT 1")).scalar()
                 logger.debug(f"Connection test result: {result}, type: {type(result)}")
 
                 # Handle different result types more robustly
@@ -130,7 +131,7 @@ class DBEngine:
 
         try:
             with Session(self._engine) as session:
-                result = session.exec(text("SELECT 1")).first()
+                result = session.execute(text("SELECT 1")).scalar()
                 logger.debug(f"Health check result: {result}, type: {type(result)}")
 
                 # Handle different result types

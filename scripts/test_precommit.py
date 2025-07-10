@@ -49,15 +49,44 @@ def test_pre_commit_hooks():
 
     # Test commands
     tests = [
-        {"cmd": ["uv", "run", "pre-commit", "--version"], "desc": "Check pre-commit installation"},
-        {"cmd": ["uv", "run", "pre-commit", "validate-config"], "desc": "Validate pre-commit configuration"},
-        {"cmd": ["uv", "run", "ruff", "check", "src/", "--statistics"], "desc": "Run Ruff linting"},
-        {"cmd": ["uv", "run", "ruff", "format", "--check", "src/"], "desc": "Check Ruff formatting"},
-        {"cmd": ["uv", "run", "isort", "--check-only", "src/"], "desc": "Check import sorting"},
-        {"cmd": ["uv", "run", "bandit", "-r", "src/", "-f", "json"], "desc": "Run security scanning with Bandit"},
-        {"cmd": ["uv", "run", "safety", "check", "--json"], "desc": "Check dependency vulnerabilities"},
         {
-            "cmd": ["uv", "run", "detect-secrets", "scan", "--baseline", ".secrets.baseline", "."],
+            "cmd": ["uv", "run", "pre-commit", "--version"],
+            "desc": "Check pre-commit installation",
+        },
+        {
+            "cmd": ["uv", "run", "pre-commit", "validate-config"],
+            "desc": "Validate pre-commit configuration",
+        },
+        {
+            "cmd": ["uv", "run", "ruff", "check", "src/", "--statistics"],
+            "desc": "Run Ruff linting",
+        },
+        {
+            "cmd": ["uv", "run", "ruff", "format", "--check", "src/"],
+            "desc": "Check Ruff formatting",
+        },
+        {
+            "cmd": ["uv", "run", "isort", "--check-only", "src/"],
+            "desc": "Check import sorting",
+        },
+        {
+            "cmd": ["uv", "run", "bandit", "-r", "src/", "-f", "json"],
+            "desc": "Run security scanning with Bandit",
+        },
+        {
+            "cmd": ["uv", "run", "safety", "check", "--json"],
+            "desc": "Check dependency vulnerabilities",
+        },
+        {
+            "cmd": [
+                "uv",
+                "run",
+                "detect-secrets",
+                "scan",
+                "--baseline",
+                ".secrets.baseline",
+                ".",
+            ],
             "desc": "Scan for secrets",
         },
     ]
