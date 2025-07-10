@@ -1,9 +1,8 @@
 import logging
-from typing import Optional
 
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
-from sqlmodel import create_engine, Session
+from sqlmodel import Session, create_engine
 
 from ..beco_app import BecoApp
 from ..configs import madcrow_config
@@ -15,7 +14,7 @@ class DBEngine:
     """Database engine manager with proper lifecycle and error handling."""
 
     def __init__(self):
-        self._engine: Optional[Engine] = None
+        self._engine: Engine | None = None
         self._is_initialized = False
 
     def init_app(self, app: BecoApp) -> None:
@@ -58,7 +57,7 @@ class DBEngine:
             logger.info("Database engine initialized successfully")
 
         except Exception as e:
-            logger.error(f"Failed to initialize database engine: {e}")
+            logger.exception("Failed to initialize database engine")
             if madcrow_config.DEPLOY_ENV == "PRODUCTION":
                 raise RuntimeError(f"Database initialization failed: {e}") from e
             else:
@@ -70,7 +69,6 @@ class DBEngine:
 
     def _test_connection(self) -> bool:
         """Test database connection during initialization."""
-        print("OK")
         if not self._engine:
             logger.error("Cannot test connection: Engine not initialized")
             return False
@@ -94,7 +92,7 @@ class DBEngine:
                 except (ValueError, TypeError):
                     # If result is a tuple/row, try to get first element
                     try:
-                        if hasattr(result, '__getitem__'):
+                        if hasattr(result, "__getitem__"):
                             result_value = int(result[0])
                             success = result_value == 1
                         else:
@@ -112,8 +110,10 @@ class DBEngine:
 
                 return success
         except Exception as e:
-            logger.error(f"Database connection test failed: {e}")
-            logger.debug(f"Connection details: {madcrow_config.DB_HOST}:{madcrow_config.DB_PORT}/{madcrow_config.DB_DATABASE}")
+            logger.exception("Database connection test failed")
+            logger.debug(
+                f"Connection details: {madcrow_config.DB_HOST}:{madcrow_config.DB_PORT}/{madcrow_config.DB_DATABASE}"
+            )
             return False
 
     def get_engine(self) -> Engine:
@@ -145,7 +145,7 @@ class DBEngine:
                 except (ValueError, TypeError):
                     # If result is a tuple/row, try to get first element
                     try:
-                        if hasattr(result, '__getitem__'):
+                        if hasattr(result, "__getitem__"):
                             result_value = int(result[0])
                             healthy = result_value == 1
                         else:
@@ -189,7 +189,7 @@ def init_app(app: BecoApp) -> None:
         db_engine.init_app(app)
         logger.info("Database extension initialized successfully")
     except Exception as e:
-        logger.error(f"Failed to initialize database extension: {e}")
+        logger.exception("Failed to initialize database extension")
         raise
 
 

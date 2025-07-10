@@ -29,7 +29,7 @@ def get_session() -> Generator[Session, None, None]:
                 yield session
                 logger.debug("Database session completed successfully")
             except Exception as e:
-                logger.error(f"Database session error: {e}")
+                logger.exception("Database session error")
                 session.rollback()
                 # Re-raise the original exception so route handlers can catch it
                 raise
@@ -37,17 +37,11 @@ def get_session() -> Generator[Session, None, None]:
                 logger.debug("Database session closed")
 
     except RuntimeError as e:
-        logger.error(f"Failed to get database engine: {e}")
-        raise HTTPException(
-            status_code=503,
-            detail="Database service unavailable"
-        ) from e
+        logger.exception("Failed to get database engine")
+        raise HTTPException(status_code=503, detail="Database service unavailable") from e
     except Exception as e:
-        logger.error(f"Database session creation failed: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail="Internal database error"
-        ) from e
+        logger.exception("Database session creation failed")
+        raise HTTPException(status_code=500, detail="Internal database error") from e
 
 
 def get_session_no_exception() -> Generator[Session | None, None, None]:

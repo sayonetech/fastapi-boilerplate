@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Madcrow Backend CLI entry point."""
 
-import sys
 from command import cli
 
-if __name__ == '__main__':
-    cli() 
+if __name__ == "__main__":
+    cli()

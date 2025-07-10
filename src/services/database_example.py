@@ -7,8 +7,6 @@ from fastapi import Depends
 from sqlalchemy import text
 from sqlmodel import Session
 
-from ..dependencies import DatabaseSession, OptionalDatabaseSession
-
 logger = logging.getLogger(__name__)
 
 
@@ -33,7 +31,7 @@ class DatabaseExampleService:
             except (ValueError, TypeError):
                 # If result is a tuple/row, try to get first element
                 try:
-                    if hasattr(result, '__getitem__'):
+                    if hasattr(result, "__getitem__"):
                         result_value = int(result[0])
                         success = result_value == 1
                     else:
@@ -47,7 +45,7 @@ class DatabaseExampleService:
             logger.info(f"Database connection test: {'passed' if success else 'failed'}")
             return success
         except Exception as e:
-            logger.error(f"Database connection test failed with exception: {e}")
+            logger.exception("Database connection test failed with exception")
             return False
 
     async def get_database_info(self, session: Session) -> dict:
@@ -68,10 +66,10 @@ class DatabaseExampleService:
                     return "Unknown"
 
                 # If it's a Row object, try to get the first value
-                if hasattr(result, '__getitem__') and hasattr(result, '_fields'):
+                if hasattr(result, "__getitem__") and hasattr(result, "_fields"):
                     # It's a Row object, get the first field
                     return str(result[0]) if len(result) > 0 else str(result)
-                elif hasattr(result, '__getitem__'):
+                elif hasattr(result, "__getitem__"):
                     # It's a tuple or list
                     return str(result[0]) if len(result) > 0 else str(result)
                 else:
@@ -81,13 +79,9 @@ class DatabaseExampleService:
             version_str = extract_value(version_result)
             db_name_str = extract_value(db_name_result)
 
-            return {
-                "version": version_str,
-                "database_name": db_name_str,
-                "status": "connected"
-            }
+            return {"version": version_str, "database_name": db_name_str, "status": "connected"}
         except Exception as e:
-            logger.error(f"Failed to get database info: {e}")
+            logger.exception("Failed to get database info")
             raise
 
     async def optional_database_operation(self, session: Session | None) -> dict:
@@ -101,7 +95,7 @@ class DatabaseExampleService:
             logger.debug(f"Optional database operation result: {result}")
             return {"status": "success", "data": str(result) if result else None}
         except Exception as e:
-            logger.error(f"Optional database operation failed: {e}")
+            logger.exception("Optional database operation failed")
             return {"status": "error", "data": str(e)}
 
     async def get_accounts_sample(self, session: Session) -> dict:
@@ -114,20 +108,16 @@ class DatabaseExampleService:
             accounts = []
             for row in result:
                 # Convert row to dict - handling different result types
-                if hasattr(row, '_asdict'):
+                if hasattr(row, "_asdict"):
                     accounts.append(row._asdict())
-                elif hasattr(row, '__dict__'):
+                elif hasattr(row, "__dict__"):
                     accounts.append(dict(row.__dict__))
                 else:
                     accounts.append(str(row))
 
-            return {
-                "status": "success",
-                "count": len(accounts),
-                "data": accounts
-            }
+            return {"status": "success", "count": len(accounts), "data": accounts}
         except Exception as e:
-            logger.error(f"Failed to get accounts sample: {e}")
+            logger.exception("Failed to get accounts sample")
             return {"status": "error", "message": str(e), "data": None}
 
     async def simple_connection_test(self, session: Session) -> dict:
@@ -145,18 +135,11 @@ class DatabaseExampleService:
                 "connected": True,
                 "test_result_with_alias": str(result),
                 "test_result_raw": str(raw_result),
-                "result_types": {
-                    "with_alias": str(type(result)),
-                    "raw": str(type(raw_result))
-                }
+                "result_types": {"with_alias": str(type(result)), "raw": str(type(raw_result))},
             }
         except Exception as e:
-            logger.error(f"Simple connection test failed: {e}")
-            return {
-                "status": "error",
-                "connected": False,
-                "message": str(e)
-            }
+            logger.exception("Simple connection test failed")
+            return {"status": "error", "connected": False, "message": str(e)}
 
     async def debug_query_results(self, session: Session) -> dict:
         """Debug different query result types."""
@@ -177,14 +160,14 @@ class DatabaseExampleService:
                     result = session.exec(text(query)).first()
 
                     # Extract actual value for JSON serialization
-                    if hasattr(result, '__getitem__') and hasattr(result, '_fields'):
+                    if hasattr(result, "__getitem__") and hasattr(result, "_fields"):
                         # It's a Row object
                         extracted_value = result[0] if len(result) > 0 else None
                         row_info = {
-                            "fields": list(result._fields) if hasattr(result, '_fields') else [],
-                            "values": list(result) if hasattr(result, '__iter__') else [result]
+                            "fields": list(result._fields) if hasattr(result, "_fields") else [],
+                            "values": list(result) if hasattr(result, "__iter__") else [result],
                         }
-                    elif hasattr(result, '__getitem__'):
+                    elif hasattr(result, "__getitem__"):
                         # It's a tuple or list
                         extracted_value = result[0] if len(result) > 0 else None
                         row_info = {"values": list(result)}
@@ -198,17 +181,17 @@ class DatabaseExampleService:
                         "extracted_value": str(extracted_value) if extracted_value is not None else None,
                         "type": str(type(result)),
                         "repr": repr(result),
-                        "row_info": row_info
+                        "row_info": row_info,
                     }
                     logger.info(f"Query '{query}' -> {result} (type: {type(result)})")
                 except Exception as e:
                     results[key] = {"error": str(e)}
-                    logger.error(f"Query '{query}' failed: {e}")
+                    logger.exception("Query failed")
 
             return {"status": "success", "results": results}
 
         except Exception as e:
-            logger.error(f"Debug query results failed: {e}")
+            logger.exception("Debug query results failed")
             return {"status": "error", "message": str(e)}
 
 

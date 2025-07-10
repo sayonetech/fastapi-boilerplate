@@ -25,7 +25,7 @@ class DatabaseExampleController:
             is_connected = await service.test_connection(session)
             return {
                 "connected": is_connected,
-                "message": "Database connection successful" if is_connected else "Database connection failed"
+                "message": "Database connection successful" if is_connected else "Database connection failed",
             }
         except Exception as e:
             raise HTTPException(

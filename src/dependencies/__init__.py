@@ -4,7 +4,7 @@ from .db import DatabaseSession, OptionalDatabaseSession, get_session, get_sessi
 
 __all__ = [
     "DatabaseSession",
-    "OptionalDatabaseSession", 
+    "OptionalDatabaseSession",
     "get_session",
     "get_session_no_exception",
 ]

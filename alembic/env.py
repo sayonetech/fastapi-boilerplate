@@ -1,9 +1,8 @@
 import sys
-from pathlib import Path
 from logging.config import fileConfig
+from pathlib import Path
 
-from sqlalchemy import engine_from_config, create_engine
-from sqlalchemy import pool
+from sqlalchemy import create_engine
 
 from alembic import context
 
@@ -66,17 +65,11 @@ def run_migrations_online() -> None:
 
     """
     # Create engine using our application's database configuration
-    connectable = create_engine(
-        madcrow_config.sqlalchemy_database_uri,
-        **madcrow_config.sqlalchemy_engine_options
-    )
+    connectable = create_engine(madcrow_config.sqlalchemy_database_uri, **madcrow_config.sqlalchemy_engine_options)
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            compare_type=True,
-            compare_server_default=True
+            connection=connection, target_metadata=target_metadata, compare_type=True, compare_server_default=True
         )
 
         with context.begin_transaction():

@@ -35,10 +35,10 @@ async def get_user(): ...
 class UserController:
     @get("/users")
     async def get_users(self): ...
-    
+
     @post("/users")
     async def create_user(self): ...
-    
+
     @get("/users/{user_id}")
     async def get_user(self): ...
 ```
@@ -66,12 +66,12 @@ router = BaseRouter(prefix="/v1/users", tags=["users"])
 @cbv(router)
 class UserController:
     """User management controller."""
-    
+
     @get("/", response_model=List[UserResponse])
     async def list_users(self) -> List[UserResponse]:
         """Get all users."""
         return await get_all_users()
-    
+
     @post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
     async def create_user(self, user_data: CreateUserRequest) -> UserResponse:
         """Create a new user."""
@@ -105,19 +105,19 @@ class UserController:
 class ResourceController:
     @get("/")
     async def list_resources(self): ...
-    
+
     @post("/")
     async def create_resource(self): ...
-    
+
     @get("/{resource_id}")
     async def get_resource(self): ...
-    
+
     @put("/{resource_id}")
     async def update_resource(self): ...
-    
+
     @patch("/{resource_id}")
     async def partial_update_resource(self): ...
-    
+
     @delete("/{resource_id}")
     async def delete_resource(self): ...
 ```
@@ -154,17 +154,17 @@ class UserController:
     def __init__(self):
         """Initialize controller with shared state."""
         self.default_limit = 20
-    
+
     def _validate_user_data(self, data: dict) -> bool:
         """Private method for validation."""
         return "email" in data and "name" in data
-    
+
     @get("/")
     async def list_users(self, limit: int = None) -> List[UserResponse]:
         """List users with default limit."""
         actual_limit = limit or self.default_limit
         return await get_users(limit=actual_limit)
-    
+
     @post("/")
     async def create_user(self, user_data: CreateUserRequest) -> UserResponse:
         """Create user with validation."""
@@ -294,7 +294,7 @@ Ensure all endpoints work correctly after migration.
    # Wrong
    @get("/")
    async def get_items(): ...
-   
+
    # Correct
    @get("/")
    async def get_items(self): ...

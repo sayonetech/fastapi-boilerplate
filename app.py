@@ -33,6 +33,7 @@ def create_fast_api_app_with_configs() -> BecoApp:
         logging.info("Cleaning up Madcrow database...")
         # Import here to avoid circular imports
         from src.extensions.ext_db import cleanup
+
         cleanup()
 
     async def stop_background_tasks():
