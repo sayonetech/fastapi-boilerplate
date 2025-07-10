@@ -7,6 +7,7 @@ The application is failing to connect to the database during startup. Here are t
 ### Option 1: Disable Connection Test (Recommended for Development)
 
 Add this to your `.env` file:
+
 ```bash
 DB_CONNECTION_TEST_ON_STARTUP=false
 ```
@@ -79,12 +80,14 @@ CREATE DATABASE madcrow;
 ## Environment-Specific Settings
 
 ### Development
+
 ```bash
 DB_CONNECTION_TEST_ON_STARTUP=false  # Skip connection test
 SQLALCHEMY_ECHO=true                 # Enable SQL logging
 ```
 
 ### Production
+
 ```bash
 DB_CONNECTION_TEST_ON_STARTUP=true   # Test connection on startup
 SQLALCHEMY_ECHO=false                # Disable SQL logging

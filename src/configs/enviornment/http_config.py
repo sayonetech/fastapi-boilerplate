@@ -21,7 +21,6 @@ class HttpConfig(BaseSettings):
     )
 
     @computed_field
-    @property
     def web_api_cors_allow_origins(self) -> list[str]:
         return self.inner_WEB_API_CORS_ALLOW_ORIGINS.split(",")
 

@@ -15,6 +15,7 @@ uv run python madcrow [COMMAND] [OPTIONS]
 ### Basic Commands
 
 #### `print-message`
+
 Print a custom message.
 
 ```bash
@@ -22,9 +23,8 @@ uv run python madcrow print-message --message "Hello World!"
 uv run python madcrow print-message -m "Hello World!"
 ```
 
-
-
 #### `version`
+
 Show application version.
 
 ```bash
@@ -32,16 +32,15 @@ uv run python madcrow version
 ```
 
 #### `help`
+
 Show help message.
 
 ```bash
 uv run python madcrow help
 ```
 
-
-
-
 #### `create-admin`
+
 Create an admin user in the database.
 
 ```bash
@@ -50,7 +49,6 @@ uv run python madcrow create-admin
 
 This command will prompt for admin name, email, and password (stored as plain text; hash in production).
 
-
 ## Global Options
 
 - `--verbose, -v`: Enable verbose logging
@@ -58,7 +56,7 @@ This command will prompt for admin name, email, and password (stored as plain te
 
 ## Examples
 
-```bash
+````bash
 # Show all available commands
 uv run python madcrow --help
 
@@ -78,7 +76,7 @@ def your_command(option: str):
     """Your command description."""
     click.echo(f"Running your command with option: {option}")
     # Your command logic here
-```
+````
 
 ## Project Structure
 

@@ -9,6 +9,7 @@ Class-Based Views (CBV) provide a way to organize related route handlers into cl
 ## Why Class-Based Views?
 
 ### Benefits
+
 - **Organization**: Group related endpoints in a single class
 - **Code Reuse**: Share common logic between methods
 - **Maintainability**: Easier to manage complex controllers
@@ -18,6 +19,7 @@ Class-Based Views (CBV) provide a way to organize related route handlers into cl
 ### Comparison with Function-Based Views
 
 **Function-Based (Traditional)**:
+
 ```python
 @router.get("/users")
 async def get_users(): ...
@@ -30,6 +32,7 @@ async def get_user(): ...
 ```
 
 **Class-Based (Our Implementation)**:
+
 ```python
 @cbv(router)
 class UserController:
@@ -177,13 +180,13 @@ class UserController:
 
 ### Route Decorators
 
-| Decorator | HTTP Method | Usage |
-|-----------|-------------|-------|
-| `@get(path, **kwargs)` | GET | Read operations |
-| `@post(path, **kwargs)` | POST | Create operations |
-| `@put(path, **kwargs)` | PUT | Full update operations |
-| `@patch(path, **kwargs)` | PATCH | Partial update operations |
-| `@delete(path, **kwargs)` | DELETE | Delete operations |
+| Decorator                 | HTTP Method | Usage                     |
+| ------------------------- | ----------- | ------------------------- |
+| `@get(path, **kwargs)`    | GET         | Read operations           |
+| `@post(path, **kwargs)`   | POST        | Create operations         |
+| `@put(path, **kwargs)`    | PUT         | Full update operations    |
+| `@patch(path, **kwargs)`  | PATCH       | Partial update operations |
+| `@delete(path, **kwargs)` | DELETE      | Delete operations         |
 
 ### Generic Route Decorator
 
@@ -229,14 +232,17 @@ src/routes/
 ## Best Practices
 
 ### 1. Controller Naming
+
 - Use descriptive names ending with "Controller"
 - Example: `UserController`, `ProductController`, `AuthController`
 
 ### 2. Method Organization
+
 - Group related operations in the same controller
 - Use consistent naming: `list_`, `get_`, `create_`, `update_`, `delete_`
 
 ### 3. Error Handling
+
 ```python
 @cbv(router)
 class UserController:
@@ -251,17 +257,20 @@ class UserController:
 ```
 
 ### 4. Documentation
+
 - Add docstrings to controller classes and methods
 - Use FastAPI's automatic documentation features
 - Include response models and status codes
 
 ### 5. Dependency Injection
+
 - Use typed dependencies for better IDE support
 - Keep dependencies at the method level for clarity
 
 ## Migration from Function-Based Views
 
 ### Step 1: Create Controller Class
+
 ```python
 # Before
 @router.get("/users")
@@ -275,14 +284,17 @@ class UserController:
 ```
 
 ### Step 2: Add Self Parameter
+
 All methods need `self` as the first parameter.
 
 ### Step 3: Update Imports
+
 ```python
 from ..cbv import cbv, get, post, put, patch, delete
 ```
 
 ### Step 4: Test
+
 Ensure all endpoints work correctly after migration.
 
 ## Troubleshooting
@@ -290,6 +302,7 @@ Ensure all endpoints work correctly after migration.
 ### Common Issues
 
 1. **Missing `self` parameter**
+
    ```python
    # Wrong
    @get("/")
@@ -301,6 +314,7 @@ Ensure all endpoints work correctly after migration.
    ```
 
 2. **Incorrect import**
+
    ```python
    # Make sure to import from the correct module
    from ..cbv import cbv, get
@@ -313,6 +327,7 @@ Ensure all endpoints work correctly after migration.
 ### Debugging
 
 Enable debug logging to see route registration:
+
 ```python
 import logging
 logging.getLogger("cbv").setLevel(logging.DEBUG)
