@@ -261,7 +261,17 @@ This project includes a `Makefile` to simplify common development tasks.
 
 For detailed documentation on specific topics, see the [docs/](./docs/) directory:
 
+- **[Production Checklist](./docs/PRODUCTION_CHECKLIST.md)** - 🚀 Production readiness checklist
 - **[Security Headers](./docs/SECURITY_HEADERS.md)** - Comprehensive security headers implementation
 - **[Class-Based Views](./docs/CBV_README.md)** - FastAPI CBV implementation guide
 - **[Database Setup](./docs/DATABASE_SETUP.md)** - Database configuration and migrations
 - **[Documentation Index](./docs/README.md)** - Complete documentation overview
+
+### 🔍 Production Readiness
+
+Before deploying to production, run the audit script:
+
+```bash
+# Check production readiness
+uv run python scripts/production_audit.py
+```

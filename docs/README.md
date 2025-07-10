@@ -4,8 +4,9 @@ Welcome to the Madcrow Backend documentation. This directory contains detailed d
 
 ## 📚 Documentation Index
 
-### 🔒 Security
-- **[Security Headers](./SECURITY_HEADERS.md)** - Comprehensive security headers middleware implementation
+### 🚀 Production & Deployment
+- **[Production Checklist](./PRODUCTION_CHECKLIST.md)** - Comprehensive production readiness checklist
+- **[Security Headers](./SECURITY_HEADERS.md)** - Security headers middleware implementation
 
 ### 🏗️ Architecture & Development
 - **[Class-Based Views (CBV)](./CBV_README.md)** - FastAPI class-based views implementation guide
@@ -13,9 +14,22 @@ Welcome to the Madcrow Backend documentation. This directory contains detailed d
 
 ## 🚀 Quick Start
 
-1. **Security Setup**: Follow the [Security Headers guide](./SECURITY_HEADERS.md) to configure security middleware
-2. **Database Setup**: Use the [Database Setup guide](./DATABASE_SETUP.md) for database configuration
-3. **Development**: Check the [CBV guide](./CBV_README.md) for implementing new API endpoints
+1. **Production Readiness**: Review the [Production Checklist](./PRODUCTION_CHECKLIST.md) before deployment
+2. **Security Setup**: Follow the [Security Headers guide](./SECURITY_HEADERS.md) to configure security middleware
+3. **Database Setup**: Use the [Database Setup guide](./DATABASE_SETUP.md) for database configuration
+4. **Development**: Check the [CBV guide](./CBV_README.md) for implementing new API endpoints
+
+## 🔍 Production Audit
+
+Run the production readiness audit to check your configuration:
+
+```bash
+# Run production audit script
+uv run python scripts/production_audit.py
+
+# Test security headers
+uv run python test_security_headers.py
+```
 
 ## 📖 Main Documentation
 
