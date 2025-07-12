@@ -1,5 +1,6 @@
 """Error factory utilities for creating standardized errors."""
 
+import hashlib
 import logging
 from typing import Any
 from uuid import UUID
@@ -28,6 +29,27 @@ from ..models.errors import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _generate_deterministic_id(input_string: str, prefix: str = "", length: int = 8) -> str:
+    """
+    Generate a deterministic ID from an input string using MD5 hash.
+
+    Args:
+        input_string: The input string to hash
+        prefix: Optional prefix for the ID
+        length: Length of the hash portion (default: 8)
+
+    Returns:
+        Deterministic ID string
+    """
+    # Use MD5 for deterministic hashing (not for security, just for consistent IDs)
+    hash_object = hashlib.md5(input_string.encode("utf-8"))
+    hash_hex = hash_object.hexdigest()[:length]
+
+    if prefix:
+        return f"{prefix}-{hash_hex}"
+    return hash_hex
 
 
 class ErrorFactory:
@@ -205,7 +227,7 @@ class ErrorResponseFactory:
             error=True,
             code="HTTP_EXCEPTION",
             message=str(exception.detail),
-            error_id="http-" + str(hash(str(exception.detail)))[:8],
+            error_id=_generate_deterministic_id(str(exception.detail), "http"),
         )
 
         response_data = response.model_dump()
@@ -225,12 +247,17 @@ class ErrorResponseFactory:
         # Log the unexpected exception
         logger.exception("Unexpected exception occurred", exc_info=exception)
 
+        # Generate deterministic IDs based on exception details
+        exception_string = f"{type(exception).__name__}:{str(exception)}"
+        error_id = _generate_deterministic_id(exception_string, "internal")
+        support_ref = _generate_deterministic_id(exception_string, "ERR", 10)
+
         response = InternalServerErrorResponse(
             error=True,
             code="INTERNAL_SERVER_ERROR",
             message="An unexpected error occurred",
-            error_id="internal-" + str(hash(str(exception)))[:8],
-            support_reference=f"ERR-{hash(str(exception))}"[:12],
+            error_id=error_id,
+            support_reference=support_ref,
         )
 
         response_data = response.model_dump()
