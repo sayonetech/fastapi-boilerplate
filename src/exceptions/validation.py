@@ -38,19 +38,24 @@ class InvalidInputError(ValidationError):
         value: Any | None = None,
         expected: str | None = None,
         context: dict[str, Any] | None = None,
+        message: str | None = None,
     ) -> None:
         validation_context = context or {}
         if expected:
             validation_context["expected"] = expected
 
-        message = f"Invalid value for field '{field}'"
-        if expected:
-            message += f", expected {expected}"
-        if value is not None:
-            message += f", got: {value}"
+        # Use custom message if provided, otherwise generate default message
+        if message:
+            error_message = message
+        else:
+            error_message = f"Invalid value for field '{field}'"
+            if expected:
+                error_message += f", expected {expected}"
+            if value is not None:
+                error_message += f", got: {value}"
 
         super().__init__(
-            message=message,
+            message=error_message,
             field=field,
             value=value,
             context=validation_context,

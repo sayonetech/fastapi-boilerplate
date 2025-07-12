@@ -63,7 +63,12 @@ class ErrorFactory:
         error_code: str = "VALIDATION_ERROR",
     ) -> ValidationError:
         """Create a validation error for a specific field."""
-        return InvalidInputError(field=field, value=value, context={"error_code": error_code, "message": message})
+        return InvalidInputError(
+            field=field,
+            value=value,
+            message=message,
+            context={"error_code": error_code},
+        )
 
     @staticmethod
     def create_account_not_found_error(
