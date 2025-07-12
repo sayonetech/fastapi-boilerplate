@@ -5,13 +5,13 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
-
 from ...dependencies import OptionalRedisServiceDep, RedisServiceDep
 from ...exceptions import DatabaseError
 from ...utils.error_factory import ErrorFactory
 from ..base_router import BaseRouter
 from ..cbv import cbv, delete, get, post
+
+logger = logging.getLogger(__name__)
 
 
 # Request/Response models for demonstration
