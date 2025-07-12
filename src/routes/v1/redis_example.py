@@ -1,8 +1,11 @@
 """Example routes demonstrating Redis usage patterns with enhanced error handling."""
 
+import logging
 from typing import Any
 
 from pydantic import BaseModel, Field
+
+logger = logging.getLogger(__name__)
 
 from ...dependencies import OptionalRedisServiceDep, RedisServiceDep
 from ...exceptions import DatabaseError
@@ -103,7 +106,7 @@ class RedisExampleController:
                     info = redis_info
             except Exception:
                 # Info retrieval failed, but don't fail the health check
-                pass
+                logger.debug("Failed to retrieve Redis info for health check")
 
             return {
                 "status": "healthy",
@@ -161,7 +164,7 @@ class RedisExampleController:
                         ttl = ttl_value
                 except Exception:
                     # TTL retrieval failed, but don't fail the whole operation
-                    pass
+                    logger.debug(f"Failed to retrieve TTL for key: {request.key}")
 
             # Happy path - return success response
             return CacheResponse(
@@ -221,7 +224,7 @@ class RedisExampleController:
                         ttl = ttl_value
                 except Exception:
                     # TTL retrieval failed, but don't fail the whole operation
-                    pass
+                    logger.debug(f"Failed to retrieve TTL for key: {key}")
 
             return CacheResponse(
                 key=key,
@@ -440,7 +443,7 @@ class RedisExampleController:
                     current_count = count_value
             except Exception:
                 # Don't fail the whole operation if we can't get the count
-                pass
+                logger.debug(f"Failed to retrieve rate limit count for key: {request.key}")
 
             return RateLimitResponse(
                 key=request.key,
