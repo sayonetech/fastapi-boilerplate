@@ -49,7 +49,7 @@ def get_optional_redis_client() -> redis.Redis | None:
 
         return get_redis()
 
-    except Exception as e:
+    except Exception:
         logger.exception("Failed to get Redis client, returning None")
         return None
 
@@ -90,7 +90,7 @@ class RedisService:
         try:
             result = self.client.get(key)
             return str(result) if result is not None else None
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to get cache for key {key}")
             return None
 
@@ -113,7 +113,7 @@ class RedisService:
             else:
                 result = self.client.set(key, value)
                 return bool(result)
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to set cache for key {key}")
             return False
 
@@ -130,7 +130,7 @@ class RedisService:
         try:
             result = self.client.delete(key)
             return bool(result)
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to delete cache for key {key}")
             return False
 
@@ -147,7 +147,7 @@ class RedisService:
         try:
             result = self.client.exists(key)
             return bool(result)
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to check existence of key {key}")
             return False
 
@@ -170,7 +170,7 @@ class RedisService:
                 parsed_data = json.loads(str(data))
                 return parsed_data if isinstance(parsed_data, dict) else None
             return None
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to get session {session_id}")
             return None
 
@@ -191,7 +191,7 @@ class RedisService:
 
             result = self.client.setex(f"session:{session_id}", expire_seconds, json.dumps(data))
             return bool(result)
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to set session {session_id}")
             return False
 
@@ -208,7 +208,7 @@ class RedisService:
         try:
             result = self.client.delete(f"session:{session_id}")
             return bool(result)
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to delete session {session_id}")
             return False
 
@@ -228,7 +228,7 @@ class RedisService:
             result = self.client.publish(channel, message)
             # Redis publish returns the number of subscribers
             return int(str(result)) if result is not None else 0
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to publish to channel {channel}")
             return 0
 
@@ -277,7 +277,7 @@ class RedisService:
 
             return current_count >= limit
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to check rate limit for key {key}")
             return False
 

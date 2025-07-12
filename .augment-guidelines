@@ -98,9 +98,6 @@ When pushing changes to Git, please use clear and meaningful commit messages tha
 
 ```
 src/
-├── mcp/               # Core logic for the MCP server
-│   ├── tools/         # Tool definitions and handlers used by MCP
-│   ├── prompts/       # Prompt templates and instructions for agents
 ├── models/            # Response data models (e.g., Pydantic schemas)
 ├── entities/          # MongoDB document schemas and database models
 ├── routes/            # API route definitions
@@ -109,7 +106,6 @@ src/
 ```
 
 ### Notes:
-- `tools` and `prompts` under `mcp` modularize agent behaviors and prompt engineering
 - `models` and `entities` separate external response formats from internal DB schemas
 - `routes`, `services`, and `utils` follow a typical FastAPI service-oriented structure
 
