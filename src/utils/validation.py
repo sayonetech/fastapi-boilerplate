@@ -4,7 +4,7 @@ import re
 from typing import Any
 from uuid import UUID
 
-from pydantic import validator
+from pydantic import field_validator
 
 from ..exceptions import (
     EmailValidationError,
@@ -191,14 +191,14 @@ def create_pydantic_validators():
         Dictionary of validator functions that can be used in Pydantic models
     """
 
-    @validator("email", pre=True)
+    @field_validator("email", mode="before")
     def validate_email_field(cls, v):
         """Pydantic validator for email fields."""
         if v is None:
             return v
         return ValidationUtils.validate_email(v)
 
-    @validator("password", pre=True)
+    @field_validator("password", mode="before")
     def validate_password_field(cls, v):
         """Pydantic validator for password fields."""
         if v is None:
@@ -208,7 +208,7 @@ def create_pydantic_validators():
     def validate_uuid_field(field_name: str = "id"):
         """Create a UUID validator for a specific field."""
 
-        @validator(field_name, pre=True)
+        @field_validator(field_name, mode="before")
         def _validate_uuid(cls, v):
             if v is None:
                 return v
@@ -223,7 +223,7 @@ def create_pydantic_validators():
     ):
         """Create a string length validator for a specific field."""
 
-        @validator(field_name, pre=True)
+        @field_validator(field_name, mode="before")
         def _validate_string_length(cls, v):
             if v is None:
                 return v
@@ -234,7 +234,7 @@ def create_pydantic_validators():
     def validate_choice_field(field_name: str, allowed_values: list[Any]):
         """Create a choice validator for a specific field."""
 
-        @validator(field_name, pre=True)
+        @field_validator(field_name, mode="before")
         def _validate_choice(cls, v):
             if v is None:
                 return v

@@ -44,7 +44,7 @@ def _generate_deterministic_id(input_string: str, prefix: str = "", length: int 
         Deterministic ID string
     """
     # Use MD5 for deterministic hashing (not for security, just for consistent IDs)
-    hash_object = hashlib.md5(input_string.encode("utf-8"))
+    hash_object = hashlib.md5(input_string.encode("utf-8"), usedforsecurity=False)  # nosec B324
     hash_hex = hash_object.hexdigest()[:length]
 
     if prefix:
