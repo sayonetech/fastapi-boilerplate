@@ -24,7 +24,6 @@ def create_fast_api_app_with_configs() -> BecoApp:
     is_development = madcrow_config.DEPLOY_ENV == "DEVELOPMENT" and madcrow_config.DEBUG
     enable_swagger = is_development
     enable_redoc = is_development
-    debug = madcrow_config.DEBUG
 
     lifespan_manager = LifespanManager()
 
@@ -38,11 +37,19 @@ def create_fast_api_app_with_configs() -> BecoApp:
 
         cleanup()
 
+    async def cleanup_redis():
+        logging.info("Cleaning up Redis connections...")
+        # Import here to avoid circular imports
+        from src.extensions.ext_redis import cleanup
+
+        cleanup()
+
     async def stop_background_tasks():
         logging.info("Stopping background tasks...")
 
     lifespan_manager.add_startup_task(setup_database)
     lifespan_manager.add_shutdown_task(stop_background_tasks)
+    lifespan_manager.add_shutdown_task(cleanup_redis)
     lifespan_manager.add_shutdown_task(cleanup_database)
 
     beco_app = BecoApp(
@@ -93,6 +100,7 @@ def initialize_extensions(app: BecoApp):
         ext_error_handling,
         ext_logging,
         ext_logging_middleware,
+        ext_redis,
         ext_security,
         ext_set_secretkey,
         ext_timezone,
@@ -110,6 +118,7 @@ def initialize_extensions(app: BecoApp):
         ext_timezone,
         ext_warnings,
         ext_db,
+        ext_redis,  # Redis should be initialized after database
     ]
 
     for ext in extensions:
