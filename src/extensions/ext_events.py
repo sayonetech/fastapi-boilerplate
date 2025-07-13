@@ -41,7 +41,7 @@ def init_events(app: BecoApp) -> None:
         signal_names = dispatcher.get_signal_names()
         logger.info(f"Event system initialized with {len(signal_names)} signals: {', '.join(signal_names)}")
 
-    except Exception as e:
+    except Exception:
         logger.exception("Failed to initialize event system")
         raise
 

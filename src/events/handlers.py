@@ -62,7 +62,7 @@ class EventHandlerRegistry:
                 },
             )
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to register handler '{handler.__name__}' for signal '{signal_name}'")
             raise
 
@@ -93,7 +93,7 @@ class EventHandlerRegistry:
 
                 logger.debug(f"Unregistered handler '{handler.__name__}' from signal '{signal_name}'")
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Failed to unregister handler '{handler.__name__}' from signal '{signal_name}'")
 
     def get_handlers(self, signal_name: str) -> list[Callable]:
