@@ -95,7 +95,7 @@ class Account(Base, table=True):
     @classmethod
     def get_by_email(cls, session: Session, email: str) -> Optional["Account"]:
         """Get account by email address."""
-        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted == False)
+        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted is False)
         return session.exec(statement).first()
 
     @classmethod
