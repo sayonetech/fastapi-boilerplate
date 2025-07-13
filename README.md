@@ -428,6 +428,7 @@ For detailed documentation on specific topics, see the [docs/](./docs/) director
 
 - **[Production Checklist](./docs/PRODUCTION_CHECKLIST.md)** - Production readiness checklist
 - **[API Reference](./docs/api-reference.md)** - API endpoints and usage documentation
+- **[Profile API](./docs/profile-api.md)** - User profile management endpoints
 
 ### 🔍 Production Readiness
 

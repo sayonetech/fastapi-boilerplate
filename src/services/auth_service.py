@@ -314,6 +314,84 @@ class AuthService:
         user = self.get_user_by_id(user_id)
         return user is not None and user.is_active
 
+    def change_password(self, user_id: UUID, current_password: str, new_password: str):
+        """
+        Change user password after verifying current password.
+
+        Args:
+            user_id: User ID
+            current_password: Current password for verification
+            new_password: New password to set
+
+        Returns:
+            PasswordChangeResponse: Password change confirmation
+
+        Raises:
+            AuthenticationError: If current password is invalid
+            AccountError: If account is not found or not active
+        """
+        from datetime import UTC, datetime
+
+        from ..models.auth import PasswordChangeResponse
+
+        try:
+            # Get user account
+            user = self.get_user_by_id(user_id)
+            if not user:
+                raise ErrorFactory.create_authentication_error(
+                    message="Account not found", context={"reason": "user_not_found"}
+                )
+
+            # Check if account is active
+            if not user.is_active:
+                raise ErrorFactory.create_authentication_error(
+                    message="Account is not active", context={"reason": "account_inactive"}
+                )
+
+            # Verify current password
+            if not self._verify_password(current_password, user.password, user.password_salt):
+                logger.warning(f"Failed password change attempt for user: {user.email}")
+                raise ErrorFactory.create_authentication_error(
+                    message="Current password is incorrect", context={"reason": "invalid_current_password"}
+                )
+
+            # Validate new password strength
+            is_valid, error_message = validate_password_strength(new_password)
+            if not is_valid:
+                raise ErrorFactory.create_authentication_error(
+                    message=error_message, context={"field": "new_password", "reason": "weak"}
+                )
+
+            # Create new password hash and salt
+            hashed_password, password_salt = create_password_hash(new_password)
+
+            # Update password
+            user.password = hashed_password
+            user.password_salt = password_salt
+            user.updated_at = datetime.now(UTC)
+
+            # Commit changes
+            self.db_session.commit()
+
+            logger.info(f"Password changed successfully for user: {user.email}")
+
+            return PasswordChangeResponse(
+                success=True,
+                message="Password changed successfully",
+                changed_at=user.updated_at,
+            )
+
+        except (AuthenticationError, AccountError):
+            # Re-raise our custom errors
+            raise
+        except Exception as e:
+            logger.exception(f"Unexpected error during password change for user_id: {user_id}")
+            self.db_session.rollback()
+            raise ErrorFactory.create_authentication_error(
+                message="Password change failed due to system error",
+                context={"error_type": type(e).__name__, "error_message": str(e)},
+            )
+
 
 def get_auth_service(db_session: Session) -> AuthService:
     """

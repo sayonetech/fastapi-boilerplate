@@ -8,7 +8,6 @@ from typing import Any
 from fastapi import HTTPException, Request
 
 from ..configs import madcrow_config
-from ..dependencies.auth import get_current_user_from_jwt_required
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +68,10 @@ def login_required(func: Callable[..., Any]) -> Callable[..., Any]:
         try:
             # Use existing authentication dependency to validate user
             # This will raise HTTPException if authentication fails
-            from ..dependencies.auth import get_auth_service_dep
+            from ..dependencies.auth import (
+                get_auth_service_dep,
+                get_current_user_from_jwt_required,
+            )
             from ..dependencies.db import get_session
 
             # Get dependencies manually

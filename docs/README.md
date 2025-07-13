@@ -20,6 +20,7 @@ Welcome to the Madcrow Backend documentation. This directory contains detailed d
 - **[Error Handling](./ERROR_HANDLING.md)** - Comprehensive error handling system
 - **[Redis Extension](./REDIS_EXTENSION.md)** - Redis integration for caching and sessions
 - **[Login Decorator](./login-decorator.md)** - Login decorator usage and patterns
+- **[Profile API](./profile-api.md)** - Profile API documentation and usage
 
 ## 🚀 Quick Start
 
