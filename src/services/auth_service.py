@@ -9,7 +9,14 @@ from sqlmodel import Session, select
 
 from ..entities.account import Account
 from ..entities.status import AccountStatus
-from ..exceptions import AccountError, AuthenticationError
+from ..exceptions import (
+    AccountBannedError,
+    AccountClosedError,
+    AccountError,
+    AccountLoginError,
+    AccountNotVerifiedError,
+    AuthenticationError,
+)
 from ..libs.password import (
     create_password_hash,
     validate_password_strength,
@@ -66,17 +73,31 @@ class AuthService:
                     message="Invalid email or password", context={"reason": "user_not_found"}
                 )
 
-            # Check if user can login (combines status and password checks)
-            if not user.can_login:
-                if not user.is_password_set:
-                    raise ErrorFactory.create_authentication_error(
-                        message="Account password not set", context={"reason": "no_password"}
-                    )
-                elif not user.is_active:
-                    raise ErrorFactory.create_authentication_error(
-                        message=f"Account is {user.status.value}",
-                        context={"reason": "account_inactive", "status": user.status.value},
-                    )
+            # Check account status first (following Dify pattern)
+            if user.status == AccountStatus.PENDING:
+                raise AccountNotVerifiedError(email=email, account_id=user.id)
+
+            if user.status == AccountStatus.BANNED:
+                raise AccountBannedError("Account is banned.", email=email, account_id=user.id)
+
+            if user.status == AccountStatus.CLOSED:
+                raise AccountClosedError("Account is closed.", email=email, account_id=user.id)
+
+            # Check if account is deleted
+            if user.is_deleted:
+                raise AccountLoginError("Account has been deleted.", email=email, account_id=user.id)
+
+            # Check if password is set
+            if not user.is_password_set:
+                raise ErrorFactory.create_authentication_error(
+                    message="Account password not set", context={"reason": "no_password"}
+                )
+
+            # Final check - account must be active to login
+            if not user.is_active:
+                raise AccountLoginError(
+                    f"Account status is {user.status.value} and cannot login.", email=email, account_id=user.id
+                )
 
             # Verify password
             if not self._verify_password(password, user.password, user.password_salt):
@@ -99,7 +120,14 @@ class AuthService:
             logger.info(f"Successful login for user: {user.email}")
             return token_pair
 
-        except (AuthenticationError, AccountError):
+        except (
+            AuthenticationError,
+            AccountError,
+            AccountNotVerifiedError,
+            AccountBannedError,
+            AccountClosedError,
+            AccountLoginError,
+        ):
             # Re-raise our custom errors
             raise
         except Exception as e:
@@ -231,7 +259,14 @@ class AuthService:
             logger.info(f"Created new account for user: {new_account.email}")
             return token_pair
 
-        except (AuthenticationError, AccountError):
+        except (
+            AuthenticationError,
+            AccountError,
+            AccountNotVerifiedError,
+            AccountBannedError,
+            AccountClosedError,
+            AccountLoginError,
+        ):
             # Re-raise our custom errors
             raise
         except Exception as e:
