@@ -405,11 +405,29 @@ uv run pre-commit clean
 
 For detailed documentation on specific topics, see the [docs/](./docs/) directory:
 
-- **[Production Checklist](./docs/PRODUCTION_CHECKLIST.md)** - 🚀 Production readiness checklist
-- **[Security Headers](./docs/SECURITY_HEADERS.md)** - Comprehensive security headers implementation
+### 📖 Core Documentation
+
+- **[Documentation Index](./docs/README.md)** - Complete documentation overview and navigation
+- **[Getting Started](./docs/getting-started.md)** - Quick start guide for new developers
+- **[Commands](./docs/commands.md)** - CLI commands and usage
+
+### 🏗️ Development & Architecture
+
 - **[Class-Based Views](./docs/CBV_README.md)** - FastAPI CBV implementation guide
 - **[Database Setup](./docs/DATABASE_SETUP.md)** - Database configuration and migrations
-- **[Documentation Index](./docs/README.md)** - Complete documentation overview
+- **[Redis Extension](./docs/REDIS_EXTENSION.md)** - Redis integration and configuration
+- **[Error Handling](./docs/ERROR_HANDLING.md)** - Error handling patterns and best practices
+
+### 🔐 Authentication & Security
+
+- **[Authentication](./docs/authentication.md)** - Authentication system overview and implementation
+- **[Login Decorator](./docs/login-decorator.md)** - Login decorator usage and patterns
+- **[Security Headers](./docs/SECURITY_HEADERS.md)** - Comprehensive security headers implementation
+
+### 🚀 Production & API
+
+- **[Production Checklist](./docs/PRODUCTION_CHECKLIST.md)** - Production readiness checklist
+- **[API Reference](./docs/api-reference.md)** - API endpoints and usage documentation
 
 ### 🔍 Production Readiness
 

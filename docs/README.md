@@ -15,10 +15,11 @@ Welcome to the Madcrow Backend documentation. This directory contains detailed d
 - **[API Reference](./api-reference.md)** - Quick reference for all API endpoints
 - **[Authentication System](./authentication.md)** - Secure authentication with JWT tokens
 - **[Commands](./commands.md)** - CLI commands for administration and management
-- **[Class-Based Views (CBV)](./CBV_README.md)** - FastAPI class-based views implementation guide
+- **[Class-Based Views (CBV)](pl./CBV_README.md)** - FastAPI class-based views implementation guide
 - **[Database Setup](./DATABASE_SETUP.md)** - Database configuration and migration guide
 - **[Error Handling](./ERROR_HANDLING.md)** - Comprehensive error handling system
 - **[Redis Extension](./REDIS_EXTENSION.md)** - Redis integration for caching and sessions
+- **[Login Decorator](./login-decorator.md)** - Login decorator usage and patterns
 
 ## 🚀 Quick Start
 

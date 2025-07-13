@@ -14,6 +14,12 @@ class SecurityConfig(BaseSettings):
         default="",
     )
 
+    # Authentication Configuration
+    LOGIN_DISABLED: bool = Field(
+        description="Disable login requirements for testing purposes. WARNING: Only use in development/testing!",
+        default=False,
+    )
+
     # Security Headers Configuration
     SECURITY_HEADERS_ENABLED: bool = Field(
         description="Enable or disable security headers middleware",

@@ -9,6 +9,7 @@ from fastapi import HTTPException, Request
 from ...dependencies.auth import AuthServiceDep, ClientIP, CurrentUser
 from ...dependencies.redis import RedisServiceDep
 from ...exceptions import AccountError, AuthenticationError
+from ...libs.login import login_required
 from ...models.auth import (
     LoginRequest,
     LogoutRequest,
@@ -309,3 +310,60 @@ class AuthController:
         except Exception as e:
             logger.exception(f"Error logging out all sessions for user: {current_user.email}")
             raise HTTPException(status_code=500, detail="Failed to logout from all sessions") from e
+
+    @get("/profile-alt", operation_id="get_profile_with_decorator")
+    @login_required
+    async def get_profile_with_decorator(
+        self,
+        request: Request,
+    ) -> dict[str, Any]:
+        """
+        Alternative profile endpoint demonstrating login_required decorator.
+
+        This endpoint shows how to use the @login_required decorator instead of
+        the CurrentUser dependency injection. The decorator ensures the user
+        is authenticated before the endpoint is called.
+
+        Args:
+            request: FastAPI request object (required for decorator)
+
+        Returns:
+            dict: User profile information
+        """
+        # At this point, we know the user is authenticated due to @login_required
+        # However, we need to get the user info again since the decorator doesn't
+        # inject it as a parameter. In practice, you'd typically use CurrentUser dependency.
+
+        try:
+            from ...dependencies.auth import get_current_user_from_jwt
+            from ...dependencies.db import get_session
+
+            # Get user from JWT (we know it's valid due to decorator)
+            db_session = next(get_session())
+            try:
+                current_user = get_current_user_from_jwt(request, db_session)
+
+                if not current_user:
+                    # This shouldn't happen due to @login_required, but just in case
+                    raise HTTPException(status_code=401, detail="Authentication required")
+
+                return {
+                    "message": "Profile retrieved using @login_required decorator",
+                    "user": {
+                        "id": str(current_user.id),
+                        "name": current_user.name,
+                        "email": current_user.email,
+                        "is_admin": current_user.is_admin,
+                        "status": current_user.status,
+                    },
+                    "decorator_used": "login_required",
+                    "note": "This demonstrates an alternative to CurrentUser dependency injection",
+                }
+            finally:
+                db_session.close()
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.exception("Error in profile endpoint with decorator")
+            raise HTTPException(status_code=500, detail="Failed to retrieve profile") from e
