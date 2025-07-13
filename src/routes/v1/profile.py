@@ -19,6 +19,7 @@ from ...models.profile import (
 )
 from ..base_router import BaseRouter
 from ..cbv import cbv, get, patch, post
+from ..protection import ProtectedController
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +30,11 @@ profile_router = BaseRouter(
 
 
 @cbv(profile_router)
-class ProfileController:
+class ProfileController(ProtectedController):
     """Profile controller for user profile management."""
+
+    # All methods in this controller require authentication by default
+    protected = True
 
     @get("/me", operation_id="get_current_user", response_model=UserProfile)
     async def get_current_user(

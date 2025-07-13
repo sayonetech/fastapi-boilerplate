@@ -422,6 +422,7 @@ For detailed documentation on specific topics, see the [docs/](./docs/) director
 
 - **[Authentication](./docs/authentication.md)** - Authentication system overview and implementation
 - **[Login Decorator](./docs/login-decorator.md)** - Login decorator usage and patterns
+- **[Protection System](./docs/PROTECTION_SYSTEM.md)** - Class-level and method-level protection system
 - **[Security Headers](./docs/SECURITY_HEADERS.md)** - Comprehensive security headers implementation
 
 ### 🚀 Production & API

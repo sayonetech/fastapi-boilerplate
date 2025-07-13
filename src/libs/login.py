@@ -38,6 +38,9 @@ def login_required(func: Callable[..., Any]) -> Callable[..., Any]:
         HTTPException: If user is not authenticated (401)
     """
 
+    # Mark function as requiring login for the protection system
+    func._login_required = True
+
     @wraps(func)
     async def decorated_view(*args, **kwargs) -> Any:
         # Check if login is disabled (for testing)
