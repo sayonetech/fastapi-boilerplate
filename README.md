@@ -187,7 +187,9 @@ This will prompt for:
 
 - Email address
 - Full name
-- Password (securely hashed with bcrypt)
+- Password (securely hashed with SHA-256 + salt)
+
+For more CLI commands and detailed usage, see the [Commands Documentation](docs/commands.md).
 
 ## Environment Setup
 

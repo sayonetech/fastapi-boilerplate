@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException
 from sqlmodel import Session
 
+from src.exceptions.base import MadcrowHTTPError
 from src.extensions.ext_db import db_engine
 
 logger = logging.getLogger(__name__)
@@ -28,6 +29,11 @@ def get_session() -> Generator[Session, None, None]:
             try:
                 yield session
                 logger.debug("Database session completed successfully")
+            except (MadcrowHTTPError, HTTPException):
+                # Re-raise business logic exceptions (AuthenticationError, AccountError, etc.)
+                # and FastAPI HTTPExceptions without logging as database errors since they're expected
+                session.rollback()
+                raise
             except Exception:
                 logger.exception("Database session error")
                 session.rollback()
@@ -39,6 +45,10 @@ def get_session() -> Generator[Session, None, None]:
     except RuntimeError as e:
         logger.exception("Failed to get database engine")
         raise HTTPException(status_code=503, detail="Database service unavailable") from e
+    except (MadcrowHTTPError, HTTPException):
+        # Re-raise business logic exceptions and FastAPI HTTPExceptions
+        # without converting them to database errors
+        raise
     except Exception as e:
         logger.exception("Database session creation failed")
         raise HTTPException(status_code=500, detail="Internal database error") from e

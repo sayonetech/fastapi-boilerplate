@@ -11,15 +11,27 @@ Welcome to the Madcrow Backend documentation. This directory contains detailed d
 
 ### 🏗️ Architecture & Development
 
+- **[Getting Started](./getting-started.md)** - Complete setup guide for new developers
+- **[API Reference](./api-reference.md)** - Quick reference for all API endpoints
+- **[Authentication System](./authentication.md)** - Secure authentication with JWT tokens
+- **[Commands](./commands.md)** - CLI commands for administration and management
 - **[Class-Based Views (CBV)](./CBV_README.md)** - FastAPI class-based views implementation guide
 - **[Database Setup](./DATABASE_SETUP.md)** - Database configuration and migration guide
+- **[Error Handling](./ERROR_HANDLING.md)** - Comprehensive error handling system
+- **[Redis Extension](./REDIS_EXTENSION.md)** - Redis integration for caching and sessions
 
 ## 🚀 Quick Start
 
-1. **Production Readiness**: Review the [Production Checklist](./PRODUCTION_CHECKLIST.md) before deployment
-2. **Security Setup**: Follow the [Security Headers guide](./SECURITY_HEADERS.md) to configure security middleware
+**New to Madcrow Backend?** Start with the [Getting Started Guide](./getting-started.md) for a complete setup walkthrough.
+
+### Step-by-Step Setup
+
+1. **Getting Started**: Follow the [Getting Started Guide](./getting-started.md) for complete setup
+2. **Authentication**: Set up user authentication with the [Authentication System guide](./authentication.md)
 3. **Database Setup**: Use the [Database Setup guide](./DATABASE_SETUP.md) for database configuration
 4. **Development**: Check the [CBV guide](./CBV_README.md) for implementing new API endpoints
+5. **Security Setup**: Follow the [Security Headers guide](./SECURITY_HEADERS.md) to configure security middleware
+6. **Production Readiness**: Review the [Production Checklist](./PRODUCTION_CHECKLIST.md) before deployment
 
 ## 🔍 Production Audit
 
