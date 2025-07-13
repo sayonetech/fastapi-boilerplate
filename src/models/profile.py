@@ -1,13 +1,11 @@
 """Profile models for user profile management."""
 
 from datetime import datetime
-from typing import TYPE_CHECKING
 from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-if TYPE_CHECKING:
-    from ..models.auth import UserProfile
+from ..models.auth import UserProfile
 
 
 class ProfileUpdateRequest(BaseModel):
@@ -32,7 +30,7 @@ class ProfileUpdateResponse(BaseModel):
 
     success: bool = Field(True, description="Profile update success status")
     message: str = Field("Profile updated successfully", description="Success message")
-    user: "UserProfile" = Field(..., description="Updated user profile")
+    user: UserProfile = Field(..., description="Updated user profile")
     updated_at: datetime = Field(..., description="Profile update timestamp")
 
     class Config:
