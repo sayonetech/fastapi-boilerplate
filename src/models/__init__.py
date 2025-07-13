@@ -1,6 +1,5 @@
 """Models package."""
 
-from .account import Account
 from .auth import (
     LoginRequest,
     LoginResponse,
@@ -38,7 +37,6 @@ from .token import (
 )
 
 __all__ = [
-    "Account",
     "AuthenticationErrorResponse",
     "AuthorizationErrorResponse",
     "BaseErrorResponse",

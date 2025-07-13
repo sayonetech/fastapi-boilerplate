@@ -36,7 +36,7 @@ def init_app(app: BecoApp) -> None:
 
         logger.info("Protection middleware initialized successfully")
 
-    except Exception as e:
+    except Exception:
         logger.exception("Failed to initialize protection middleware")
         raise
 

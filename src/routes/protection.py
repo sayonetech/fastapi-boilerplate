@@ -2,9 +2,16 @@
 
 import logging
 from enum import Enum
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Protocol, cast
 
 logger = logging.getLogger(__name__)
+
+
+class ProtectedControllerProtocol(Protocol):
+    """Protocol for protected controller classes."""
+
+    protected: ClassVar[bool]
+    _protection_metadata: ClassVar[dict[str, Any]]
 
 
 class ProtectionLevel(Enum):
@@ -48,11 +55,15 @@ class ProtectedController:
         super().__init_subclass__(**kwargs)
 
         # Store protection metadata on the class
-        cls._protection_metadata = {
-            "class_protected": getattr(cls, "protected", False),
-            "controller_name": cls.__name__,
-            "methods": {},
-        }
+        setattr(  # noqa: B010
+            cls,
+            "_protection_metadata",
+            {
+                "class_protected": getattr(cls, "protected", False),
+                "controller_name": cls.__name__,
+                "methods": {},
+            },
+        )
 
         logger.debug(f"Registered protected controller: {cls.__name__} (protected={cls.protected})")
 
@@ -76,12 +87,16 @@ def protected_controller(protected: bool = True):
 
     def decorator(cls: type) -> type:
         # Add protection metadata to the class
-        cls.protected = protected
-        cls._protection_metadata = {
-            "class_protected": protected,
-            "controller_name": cls.__name__,
-            "methods": {},
-        }
+        setattr(cls, "protected", protected)  # noqa: B010
+        setattr(  # noqa: B010
+            cls,
+            "_protection_metadata",
+            {
+                "class_protected": protected,
+                "controller_name": cls.__name__,
+                "methods": {},
+            },
+        )
 
         logger.debug(f"Marked controller as protected: {cls.__name__} (protected={protected})")
         return cls
@@ -104,8 +119,8 @@ def no_protection(func):
             @no_protection
             async def public_endpoint(self): ...
     """
-    func._protection_level = ProtectionLevel.NONE
-    func._protection_override = True
+    setattr(func, "_protection_level", ProtectionLevel.NONE)  # noqa: B010
+    setattr(func, "_protection_override", True)  # noqa: B010
     logger.debug(f"Marked method as unprotected: {func.__name__}")
     return func
 
@@ -124,8 +139,8 @@ def require_protection(func):
             @require_protection
             async def private_endpoint(self): ...
     """
-    func._protection_level = ProtectionLevel.REQUIRED
-    func._protection_override = True
+    setattr(func, "_protection_level", ProtectionLevel.REQUIRED)  # noqa: B010
+    setattr(func, "_protection_override", True)  # noqa: B010
     logger.debug(f"Marked method as protected: {func.__name__}")
     return func
 
@@ -142,7 +157,7 @@ def get_controller_protection_info(controller_class: type) -> dict[str, Any]:
     """
     # Check if class has protection metadata
     if hasattr(controller_class, "_protection_metadata"):
-        return controller_class._protection_metadata
+        return cast(dict[str, Any], getattr(controller_class, "_protection_metadata"))  # noqa: B009
 
     # Check if class inherits from ProtectedController or has protected attribute
     class_protected = getattr(controller_class, "protected", False)
@@ -275,6 +290,5 @@ def get_all_protected_routes() -> dict[str, dict[str, Any]]:
 
 def clear_route_registry() -> None:
     """Clear the route registry. Useful for testing."""
-    global _route_controller_registry
     _route_controller_registry.clear()
     logger.debug("Cleared route controller registry")

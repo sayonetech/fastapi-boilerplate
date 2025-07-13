@@ -1,7 +1,7 @@
 """Protection middleware for enforcing authentication on protected routes."""
 
 import logging
-from typing import Any
+from typing import Any, cast
 
 from fastapi import HTTPException, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -53,7 +53,8 @@ class ProtectionMiddleware(BaseHTTPMiddleware):
         """
         # Skip protection for excluded paths
         if self._should_skip_protection(request):
-            return await call_next(request)
+            response = await call_next(request)
+            return cast(Response, response)
 
         # Check if route requires protection
         if await self._requires_protection(request):
@@ -61,7 +62,8 @@ class ProtectionMiddleware(BaseHTTPMiddleware):
             await self._enforce_authentication(request)
 
         # Continue to the next middleware/handler
-        return await call_next(request)
+        response = await call_next(request)
+        return cast(Response, response)
 
     def _should_skip_protection(self, request: Request) -> bool:
         """
@@ -129,7 +131,7 @@ class ProtectionMiddleware(BaseHTTPMiddleware):
         except ImportError:
             logger.warning("Protection system not available")
             return False
-        except Exception as e:
+        except Exception:
             logger.exception("Error checking route protection")
             return False
 

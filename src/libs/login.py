@@ -39,7 +39,7 @@ def login_required(func: Callable[..., Any]) -> Callable[..., Any]:
     """
 
     # Mark function as requiring login for the protection system
-    func._login_required = True
+    setattr(func, "_login_required", True)  # noqa: B010
 
     @wraps(func)
     async def decorated_view(*args, **kwargs) -> Any:

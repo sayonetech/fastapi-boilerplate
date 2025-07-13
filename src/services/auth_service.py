@@ -22,6 +22,7 @@ from ..libs.password import (
     validate_password_strength,
     verify_password,
 )
+from ..models.auth import PasswordChangeResponse
 from ..models.token import TokenPair
 from ..services.token_service import get_token_service
 from ..utils.error_factory import ErrorFactory
@@ -314,7 +315,7 @@ class AuthService:
         user = self.get_user_by_id(user_id)
         return user is not None and user.is_active
 
-    def change_password(self, user_id: UUID, current_password: str, new_password: str):
+    def change_password(self, user_id: UUID, current_password: str, new_password: str) -> PasswordChangeResponse:
         """
         Change user password after verifying current password.
 
