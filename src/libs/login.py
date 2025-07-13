@@ -153,7 +153,10 @@ def admin_required(func: Callable[..., Any]) -> Callable[..., Any]:
 
         try:
             # Use existing authentication dependency to validate user
-            from ..dependencies.auth import get_auth_service_dep
+            from ..dependencies.auth import (
+                get_auth_service_dep,
+                get_current_user_from_jwt_required,
+            )
             from ..dependencies.db import get_session
 
             # Get dependencies manually

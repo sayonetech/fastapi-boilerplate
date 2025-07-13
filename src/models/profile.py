@@ -1,9 +1,13 @@
 """Profile models for user profile management."""
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from ..models.auth import UserProfile
 
 
 class ProfileUpdateRequest(BaseModel):
@@ -117,10 +121,3 @@ class ProfilePreferencesResponse(BaseModel):
                 "updated_at": "2024-01-15T14:30:00Z",
             }
         }
-
-
-# Import UserProfile to avoid circular imports
-from ..models.auth import UserProfile
-
-# Update forward references
-ProfileUpdateResponse.model_rebuild()
