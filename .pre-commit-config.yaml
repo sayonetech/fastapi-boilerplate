@@ -111,7 +111,7 @@ repos:
           - flake8-bugbear
           - flake8-comprehensions
           - flake8-simplify
-        args: ["--max-line-length=100", "--extend-ignore=E203,E501"]
+        args: ["--max-line-length=100", "--extend-ignore=E203,E501,B008"]
         files: ^src/
         exclude: ^(migrations/|tests/|alembic/)
         stages: [pre-push]

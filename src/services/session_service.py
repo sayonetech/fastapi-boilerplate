@@ -70,7 +70,6 @@ class SessionService:
             }
 
             # Store session in Redis
-            session_key = f"{self.SESSION_KEY_PREFIX}{session_id}"
             success = self.redis.set_session(session_id, session_data, duration)
 
             if not success:
@@ -125,7 +124,7 @@ class SessionService:
             logger.debug(f"Session validated: {session_id}")
             return session_data
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error validating session: {session_id}")
             return None
 
@@ -155,7 +154,7 @@ class SessionService:
 
             return deleted
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error deleting session: {session_id}")
             return False
 
@@ -191,7 +190,7 @@ class SessionService:
             logger.info(f"Deleted {deleted_count} sessions for user: {user_id}")
             return deleted_count
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error deleting all sessions for user: {user_id}")
             return 0
 
@@ -224,7 +223,7 @@ class SessionService:
                 created_at=datetime.fromisoformat(session_data["created_at"]),
             )
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error creating user profile from session: {session_id}")
             return None
 
@@ -246,7 +245,7 @@ class SessionService:
 
             logger.debug(f"Extended session: {session_id}")
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error extending session: {session_id}")
 
     def _add_user_session(self, user_id: UUID, session_id: str, duration: int) -> None:
@@ -272,7 +271,7 @@ class SessionService:
             # Store updated list
             self.redis.set_cache(user_sessions_key, json.dumps(session_ids), duration)
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error tracking user session: {user_id}, {session_id}")
 
     def _remove_user_session(self, user_id: UUID, session_id: str) -> None:
@@ -304,7 +303,7 @@ class SessionService:
                     # Delete empty list
                     self.redis.delete_cache(user_sessions_key)
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error removing user session: {user_id}, {session_id}")
 
 

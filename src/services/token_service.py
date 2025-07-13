@@ -15,8 +15,8 @@ from ..models.token import TokenClaims, TokenPair
 logger = logging.getLogger(__name__)
 
 # Redis key prefixes for refresh tokens (following Dify pattern)
-REFRESH_TOKEN_PREFIX = "refresh_token:"
-ACCOUNT_REFRESH_TOKEN_PREFIX = "account_refresh_token:"
+REFRESH_TOKEN_PREFIX = "refresh_token:"  # nosec B105
+ACCOUNT_REFRESH_TOKEN_PREFIX = "account_refresh_token:"  # nosec B105
 
 
 class TokenService:
@@ -62,7 +62,7 @@ class TokenService:
             return TokenPair(
                 access_token=access_token,
                 refresh_token=refresh_token,
-                token_type="Bearer",
+                token_type="Bearer",  # nosec B106
                 expires_in=self.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
                 refresh_expires_in=self.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
             )
@@ -92,7 +92,7 @@ class TokenService:
             iat=int(now.timestamp()),
             exp=int(expire.timestamp()),
             jti=str(uuid4()),
-            token_type="access",
+            token_type="access",  # nosec B106
         )
 
         return jwt.encode(claims.model_dump(), self.secret_key, algorithm=self.ALGORITHM)
@@ -151,7 +151,7 @@ class TokenService:
         self.redis_client.delete(self._get_refresh_token_key(refresh_token))
         self.redis_client.delete(self._get_account_refresh_token_key(account_id))
 
-    def verify_token(self, token: str, token_type: str = "access") -> TokenClaims | None:
+    def verify_token(self, token: str, token_type: str = "access") -> TokenClaims | None:  # nosec B107
         """
         Verify and decode JWT token.
 
@@ -184,7 +184,7 @@ class TokenService:
         except InvalidTokenError as e:
             logger.debug(f"Invalid token: {str(e)}")
             return None
-        except Exception as e:
+        except Exception:
             logger.exception("Error verifying token")
             return None
 
@@ -239,12 +239,12 @@ class TokenService:
             return TokenPair(
                 access_token=new_access_token,
                 refresh_token=new_refresh_token,
-                token_type="Bearer",
+                token_type="Bearer",  # nosec B106
                 expires_in=self.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
                 refresh_expires_in=self.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
             )
 
-        except Exception as e:
+        except Exception:
             logger.exception("Error refreshing token pair")
             return None
 
@@ -305,7 +305,7 @@ class TokenService:
                 self._delete_refresh_token(refresh_token, account_id)
                 logger.info(f"Logged out user: {account_id}")
 
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error during logout for account: {account_id}")
 
     def revoke_token(self, token: str) -> bool:
@@ -331,7 +331,7 @@ class TokenService:
             logger.info(f"Token revoked: {claims.jti}")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.exception("Error revoking token")
             return False
 
