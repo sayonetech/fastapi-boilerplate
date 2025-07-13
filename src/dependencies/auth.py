@@ -2,6 +2,7 @@
 
 import logging
 from typing import Annotated, Optional
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, Request
 from sqlmodel import Session
@@ -74,7 +75,13 @@ def get_current_user_from_jwt(request: Request, session: Session = Depends(get_s
 
         # Get user from database to ensure it still exists and is active
         auth_service = get_auth_service(session)
-        user = auth_service.get_user_by_id(claims.sub)
+        try:
+            user_id = UUID(claims.sub)
+        except ValueError:
+            logger.warning(f"Invalid UUID format in token: {claims.sub}")
+            return None
+
+        user = auth_service.get_user_by_id(user_id)
         if not user or not auth_service.is_user_active(user.id):
             return None
 
@@ -136,7 +143,16 @@ def get_current_user_from_jwt_required(
             )
 
         # Get user from database to ensure it still exists and is active
-        user = auth_service.get_user_by_id(claims.sub)
+        try:
+            user_id = UUID(claims.sub)
+        except ValueError:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token format. Please login again.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        user = auth_service.get_user_by_id(user_id)
         if not user or not auth_service.is_user_active(user.id):
             raise HTTPException(
                 status_code=401, detail="User account is no longer active.", headers={"WWW-Authenticate": "Bearer"}

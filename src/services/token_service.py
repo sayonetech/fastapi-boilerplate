@@ -2,8 +2,8 @@
 
 import logging
 import secrets
-from datetime import datetime, timedelta
-from uuid import uuid4
+from datetime import UTC, datetime, timedelta
+from uuid import UUID, uuid4
 
 import jwt
 from jwt import InvalidTokenError
@@ -14,7 +14,7 @@ from ..models.token import TokenClaims, TokenPair
 
 logger = logging.getLogger(__name__)
 
-# Redis key prefixes for refresh tokens (following Dify pattern)
+# Redis key prefixes for refresh tokens
 REFRESH_TOKEN_PREFIX = "refresh_token:"  # nosec B105
 ACCOUNT_REFRESH_TOKEN_PREFIX = "account_refresh_token:"  # nosec B105
 
@@ -24,7 +24,7 @@ class TokenService:
     JWT token service for creating and validating access and refresh tokens.
 
     This service provides secure JWT-based authentication with
-    access and refresh token management following Dify's pattern.
+    access and refresh token management.
     """
 
     # Token configuration
@@ -56,7 +56,7 @@ class TokenService:
             # Create refresh token (simple random string, not JWT)
             refresh_token = self._generate_refresh_token()
 
-            # Store refresh token in Redis following Dify pattern
+            # Store refresh token in Redis
             self._store_refresh_token(refresh_token, str(user.id))
 
             return TokenPair(
@@ -81,7 +81,7 @@ class TokenService:
         Returns:
             str: JWT access token
         """
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         expire = now + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
 
         claims = TokenClaims(
@@ -99,7 +99,7 @@ class TokenService:
 
     def _generate_refresh_token(self, length: int = 64) -> str:
         """
-        Generate a random refresh token (following Dify pattern).
+        Generate a random refresh token.
 
         Args:
             length: Length of the token in bytes (default: 64)
@@ -119,7 +119,7 @@ class TokenService:
 
     def _store_refresh_token(self, refresh_token: str, account_id: str) -> None:
         """
-        Store refresh token in Redis (following Dify pattern).
+        Store refresh token in Redis.
 
         Args:
             refresh_token: The refresh token
@@ -175,7 +175,7 @@ class TokenService:
                 return None
 
             # Check expiration
-            if datetime.utcnow().timestamp() > claims.exp:
+            if datetime.now(UTC).timestamp() > claims.exp:
                 logger.debug(f"Token expired: {claims.jti}")
                 return None
 
@@ -190,7 +190,7 @@ class TokenService:
 
     def refresh_token_pair(self, refresh_token: str) -> TokenPair | None:
         """
-        Create new token pair from refresh token (following Dify pattern).
+        Create new token pair from refresh token.
 
         Args:
             refresh_token: Valid refresh token
@@ -210,7 +210,14 @@ class TokenService:
                 return None
 
             # Handle both string and bytes return from Redis
-            account_id = account_id_data.decode("utf-8") if isinstance(account_id_data, bytes) else account_id_data
+            account_id_str = account_id_data.decode("utf-8") if isinstance(account_id_data, bytes) else account_id_data
+
+            # Convert string to UUID
+            try:
+                account_id = UUID(account_id_str)
+            except ValueError:
+                logger.exception(f"Invalid UUID format for account_id: {account_id_str}")
+                return None
 
             # Load user from database (you'll need to inject a way to get user)
             # For now, we'll need to modify this to accept a user lookup function
@@ -219,7 +226,6 @@ class TokenService:
             from ..services.auth_service import get_auth_service
 
             # This is not ideal - we should inject dependencies properly
-            # But for now, this maintains the Dify pattern
             with next(get_session()) as session:
                 auth_service = get_auth_service(session)
                 user = auth_service.get_user_by_id(account_id)
@@ -233,8 +239,8 @@ class TokenService:
             new_refresh_token = self._generate_refresh_token()
 
             # Delete old refresh token and store new one
-            self._delete_refresh_token(refresh_token, account_id)
-            self._store_refresh_token(new_refresh_token, account_id)
+            self._delete_refresh_token(refresh_token, account_id_str)
+            self._store_refresh_token(new_refresh_token, account_id_str)
 
             return TokenPair(
                 access_token=new_access_token,
@@ -279,14 +285,14 @@ class TokenService:
             if not exp:
                 return True
 
-            return datetime.utcnow().timestamp() > exp
+            return datetime.now(UTC).timestamp() > float(exp)
 
         except Exception:
             return True
 
     def logout(self, account_id: str) -> None:
         """
-        Logout user by deleting their refresh token (following Dify pattern).
+        Logout user by deleting their refresh token.
 
         Args:
             account_id: User account ID
@@ -337,7 +343,7 @@ class TokenService:
 
 
 # Global token service instance
-token_service = None
+token_service: TokenService | None = None
 
 
 def get_token_service(redis_client=None) -> TokenService:

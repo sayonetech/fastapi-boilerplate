@@ -34,7 +34,6 @@ class Account(Base, table=True):
     # test filed to check migration working or not
     # test_unique: str = Field(default=None, unique=True)
 
-    # Properties inspired by Dify's Account model
     @property
     def is_password_set(self) -> bool:
         """Check if user has a password set."""
