@@ -95,7 +95,7 @@ def get_current_user_from_jwt(request: Request, session: Session = Depends(get_s
         logger.debug(f"Authenticated user via JWT: {user.email}")
         return user_profile
 
-    except Exception as e:
+    except Exception:
         logger.exception("Error getting current user from JWT")
         return None
 

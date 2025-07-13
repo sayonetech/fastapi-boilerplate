@@ -96,19 +96,19 @@ class Account(Base, table=True):
     @classmethod
     def get_by_email(cls, session: Session, email: str) -> Optional["Account"]:
         """Get account by email address."""
-        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted == False)
+        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted is False)
         return session.exec(statement).first()
 
     @classmethod
     def get_active_by_email(cls, session: Session, email: str) -> Optional["Account"]:
         """Get active account by email address."""
         statement = select(cls).where(
-            cls.email == email.lower(), cls.status == AccountStatus.ACTIVE, cls.is_deleted == False
+            cls.email == email.lower(), cls.status == AccountStatus.ACTIVE, cls.is_deleted is False
         )
         return session.exec(statement).first()
 
     @classmethod
     def email_exists(cls, session: Session, email: str) -> bool:
         """Check if email already exists."""
-        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted == False)
+        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted is False)
         return session.exec(statement).first() is not None
