@@ -427,6 +427,7 @@ For detailed documentation on specific topics, see the [docs/](./docs/) director
 
 ### 🏗️ Development & Architecture
 
+- **[Event System](./docs/events.md)** - Event-driven architecture with Blinker signals
 - **[Class-Based Views](./docs/CBV_README.md)** - FastAPI CBV implementation guide
 - **[Database Setup](./docs/DATABASE_SETUP.md)** - Database configuration and migrations
 - **[Redis Extension](./docs/REDIS_EXTENSION.md)** - Redis integration and configuration

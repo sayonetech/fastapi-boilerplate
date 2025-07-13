@@ -1,6 +1,7 @@
 """Authentication service for user login and session management."""
 
 import logging
+from datetime import UTC, datetime
 
 # datetime imports moved to Account model
 from uuid import UUID
@@ -9,6 +10,16 @@ from sqlmodel import Session
 
 from ..entities.account import Account
 from ..entities.status import AccountStatus
+from ..events.dispatcher import (
+    emit_login_event,
+    emit_login_failed_event,
+    emit_registration_event,
+)
+from ..events.models import (
+    LoginEventContext,
+    LoginFailedEventContext,
+    RegistrationEventContext,
+)
 from ..exceptions import (
     AccountBannedError,
     AccountClosedError,
@@ -66,6 +77,7 @@ class AuthService:
             AccountError: If account is not in valid state
         """
         # Note: Basic validation is handled by LoginRequest model
+        login_timestamp = datetime.now(UTC)
 
         try:
             # Check if rate limiting is enabled
@@ -102,32 +114,56 @@ class AuthService:
                 # Increment rate limit for failed attempts (user not found)
                 if rate_limiter and redis_client:
                     rate_limiter.increment_rate_limit(email_normalized, redis_client)
+
+                # Emit login failed event
+                self._emit_login_failed_event(
+                    email=email, failure_reason="user_not_found", ip_address=login_ip, timestamp=login_timestamp
+                )
+                
                 raise ErrorFactory.create_authentication_error(
                     message="Invalid email or password", context={"reason": "user_not_found"}
                 )
 
             # Check account status first (following Dify pattern)
             if user.status == AccountStatus.PENDING:
+                self._emit_login_failed_event(
+                    email=email, failure_reason="account_not_verified", ip_address=login_ip, timestamp=login_timestamp
+                )
                 raise AccountNotVerifiedError(email=email, account_id=user.id)
 
             if user.status == AccountStatus.BANNED:
+                self._emit_login_failed_event(
+                    email=email, failure_reason="account_banned", ip_address=login_ip, timestamp=login_timestamp
+                )
                 raise AccountBannedError("Account is banned.", email=email, account_id=user.id)
 
             if user.status == AccountStatus.CLOSED:
+                self._emit_login_failed_event(
+                    email=email, failure_reason="account_closed", ip_address=login_ip, timestamp=login_timestamp
+                )
                 raise AccountClosedError("Account is closed.", email=email, account_id=user.id)
 
             # Check if account is deleted
             if user.is_deleted:
+                self._emit_login_failed_event(
+                    email=email, failure_reason="account_deleted", ip_address=login_ip, timestamp=login_timestamp
+                )
                 raise AccountLoginError("Account has been deleted.", email=email, account_id=user.id)
 
             # Check if password is set
             if not user.is_password_set:
+                self._emit_login_failed_event(
+                    email=email, failure_reason="no_password_set", ip_address=login_ip, timestamp=login_timestamp
+                )
                 raise ErrorFactory.create_authentication_error(
                     message="Account password not set", context={"reason": "no_password"}
                 )
 
             # Final check - account must be active to login
             if not user.is_active:
+                self._emit_login_failed_event(
+                    email=email, failure_reason="account_inactive", ip_address=login_ip, timestamp=login_timestamp
+                )
                 raise AccountLoginError(
                     f"Account status is {user.status.value} and cannot login.", email=email, account_id=user.id
                 )
@@ -138,6 +174,12 @@ class AuthService:
                 # Increment rate limit for failed password attempts
                 if rate_limiter and redis_client:
                     rate_limiter.increment_rate_limit(email_normalized, redis_client)
+                logger.warning(f"Failed login attempt for email: {email}")
+
+                self._emit_login_failed_event(
+                    email=email, failure_reason="invalid_credentials", ip_address=login_ip, timestamp=login_timestamp
+                )
+
                 raise ErrorFactory.create_authentication_error(
                     message="Invalid email or password", context={"reason": "invalid_credentials"}
                 )
@@ -158,6 +200,11 @@ class AuthService:
             token_service = get_token_service(redis_client)
             token_pair = token_service.create_token_pair(user)
 
+            # Emit successful login event
+            self._emit_login_success_event(
+                user=user, ip_address=login_ip, timestamp=login_timestamp, session_duration=token_pair.expires_in
+            )
+
             logger.info(f"Successful login for user: {user.email}")
             return token_pair
 
@@ -174,6 +221,12 @@ class AuthService:
             raise
         except Exception as e:
             logger.exception(f"Unexpected error during authentication for email: {email}")
+
+            # Emit login failed event for system errors
+            self._emit_login_failed_event(
+                email=email, failure_reason="system_error", ip_address=login_ip, timestamp=login_timestamp
+            )
+
             raise ErrorFactory.create_authentication_error(
                 message="Authentication failed due to system error",
                 context={"error_type": type(e).__name__, "error_message": str(e)},
@@ -236,6 +289,100 @@ class AuthService:
             logger.exception("Error verifying password")
             return False
 
+    def _emit_login_success_event(
+        self,
+        user: Account,
+        ip_address: str | None = None,
+        timestamp: datetime | None = None,
+        session_duration: int | None = None,
+    ) -> None:
+        """
+        Emit a successful login event.
+
+        Args:
+            user: Authenticated user account
+            ip_address: Client IP address
+            timestamp: Login timestamp
+            session_duration: Session duration in seconds
+        """
+        try:
+            context = LoginEventContext(
+                user_id=user.id,
+                email=user.email,
+                name=user.name,
+                is_admin=user.is_admin,
+                remember_me=False,  # This would need to be passed from the request
+                ip_address=ip_address,
+                timestamp=timestamp or datetime.now(UTC),
+                session_duration=session_duration,
+            )
+
+            emit_login_event(context, sender=self)
+
+        except Exception as e:
+            # Don't let event emission failures break the login flow
+            logger.warning(f"Failed to emit login success event for user {user.email}: {e}")
+
+    def _emit_login_failed_event(
+        self,
+        email: str,
+        failure_reason: str,
+        ip_address: str | None = None,
+        timestamp: datetime | None = None,
+        attempt_count: int | None = None,
+    ) -> None:
+        """
+        Emit a login failed event.
+
+        Args:
+            email: Attempted email address
+            failure_reason: Reason for login failure
+            ip_address: Client IP address
+            timestamp: Failure timestamp
+            attempt_count: Number of failed attempts
+        """
+        try:
+            context = LoginFailedEventContext(
+                email=email,
+                failure_reason=failure_reason,
+                ip_address=ip_address,
+                timestamp=timestamp or datetime.now(UTC),
+                attempt_count=attempt_count,
+            )
+
+            emit_login_failed_event(context, sender=self)
+
+        except Exception as e:
+            # Don't let event emission failures break the error flow
+            logger.warning(f"Failed to emit login failed event for email {email}: {e}")
+
+    def _emit_registration_event(
+        self, user: Account, ip_address: str | None = None, timestamp: datetime | None = None
+    ) -> None:
+        """
+        Emit a user registration event.
+
+        Args:
+            user: Newly registered user account
+            ip_address: Client IP address
+            timestamp: Registration timestamp
+        """
+        try:
+            context = RegistrationEventContext(
+                user_id=user.id,
+                email=user.email,
+                name=user.name,
+                account_status=user.status.value,
+                ip_address=ip_address,
+                timestamp=timestamp or datetime.now(UTC),
+            )
+
+            emit_registration_event(context, sender=self)
+
+        except Exception as e:
+            # Don't let event emission failures break the registration flow
+            logger.warning(f"Failed to emit registration event for user {user.email}: {e}")
+
     def create_account(self, name: str, email: str, password: str, is_admin: bool = False) -> TokenPair:
         """
         Create new user account with secure password handling.
@@ -297,6 +444,9 @@ class AuthService:
             redis_client = get_redis_client()
             token_service = get_token_service(redis_client)
             token_pair = token_service.create_token_pair(new_account)
+
+            # Emit registration event
+            self._emit_registration_event(user=new_account, timestamp=datetime.now(UTC))
 
             logger.info(f"Created new account for user: {new_account.email}")
             return token_pair
