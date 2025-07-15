@@ -76,6 +76,14 @@
 
 The project uses Alembic for database migrations. The migration system is already configured to work with our application's database settings.
 
+#### One-Time Setup (Only once per project)
+
+```bash
+alembic init alembic
+```
+
+> _Initializes the Alembic folder and configuration files. Do this once when setting up migrations for the first time._
+
 #### 1. Check Current Migration State
 
 ```bash
@@ -84,13 +92,19 @@ uv run alembic current
 
 > _Shows the current migration revision applied to the database._
 
-#### 2. Apply All Migrations (First Time Setup)
+#### 2. Generate and Apply Initial Migration (First-Time Setup)
+
+```bash
+uv run alembic revision --autogenerate -m "initial schema"
+```
+
+> _Generates the initial migration based on your current models._
 
 ```bash
 uv run alembic upgrade head
 ```
 
-> _This applies all migrations to bring your database schema up to date. Run this after setting up the database._
+> _This applies all migrations to bring your database schema up to date._
 
 #### 3. Create a New Migration After Changing Models
 

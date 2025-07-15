@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import false
+from sqlalchemy import Index, PrimaryKeyConstraint, false
 from sqlmodel import Field, Session, select
 
 from .base import Base
@@ -11,11 +11,14 @@ from .status import AccountStatus
 
 class Account(Base, table=True):
     __tablename__ = "accounts"
-
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    __table_args__ = (
+        PrimaryKeyConstraint("id", name="account_pkey"),
+        Index("account_email_idx", "email"),
+    )
+    id: UUID = Field(default_factory=uuid4)
 
     name: str = Field(nullable=False)
-    email: str = Field(nullable=False, unique=True, index=True)
+    email: str = Field(nullable=False)
     password: str | None = Field(default=None)
     password_salt: str | None = Field(default=None)
 
@@ -31,9 +34,6 @@ class Account(Base, table=True):
     is_admin: bool = Field(default=False, nullable=False)
     activation_token: str | None = Field(default=None)
     token_expires_at: datetime | None = Field(default=None)
-
-    # test filed to check migration working or not
-    # test_unique: str = Field(default=None, unique=True)
 
     @property
     def is_password_set(self) -> bool:

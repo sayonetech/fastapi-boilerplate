@@ -75,7 +75,7 @@ repos:
     hooks:
       - id: detect-secrets
         args: ["--baseline", ".secrets.baseline"]
-        exclude: ^(\.env\.example|\.env\.production\.example)$
+        exclude: ^(\.env\.example|\.env\.production\.example|alembic/)
         stages: [pre-commit]
 
   # Python import sorting
