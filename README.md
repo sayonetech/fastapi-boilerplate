@@ -428,21 +428,21 @@ For detailed documentation on specific topics, see the [docs/](./docs/) director
 ### 🏗️ Development & Architecture
 
 - **[Event System](./docs/events.md)** - Event-driven architecture with Blinker signals
-- **[Class-Based Views](./docs/CBV_README.md)** - FastAPI CBV implementation guide
-- **[Database Setup](./docs/DATABASE_SETUP.md)** - Database configuration and migrations
-- **[Redis Extension](./docs/REDIS_EXTENSION.md)** - Redis integration and configuration
-- **[Error Handling](./docs/ERROR_HANDLING.md)** - Error handling patterns and best practices
+- **[Class-Based Views](./docs/class-based-views.md)** - FastAPI CBV implementation guide
+- **[Database Setup](./docs/database-setup.md)** - Database configuration and migrations
+- **[Redis Extension](./docs/redis-extension.md)** - Redis integration and configuration
+- **[Error Handling](./docs/error-handling.md)** - Error handling patterns and best practices
 
 ### 🔐 Authentication & Security
 
 - **[Authentication](./docs/authentication.md)** - Authentication system overview and implementation
 - **[Login Decorator](./docs/login-decorator.md)** - Login decorator usage and patterns
-- **[Protection System](./docs/PROTECTION_SYSTEM.md)** - Class-level and method-level protection system
-- **[Security Headers](./docs/SECURITY_HEADERS.md)** - Comprehensive security headers implementation
+- **[Protection System](./docs/protection-system.md)** - Class-level and method-level protection system
+- **[Security Headers](./docs/security-headers.md)** - Comprehensive security headers implementation
 
 ### 🚀 Production & API
 
-- **[Production Checklist](./docs/PRODUCTION_CHECKLIST.md)** - Production readiness checklist
+- **[Production Checklist](./docs/production-checklist.md)** - Production readiness checklist
 - **[API Reference](./docs/api-reference.md)** - API endpoints and usage documentation
 - **[Profile API](./docs/profile-api.md)** - User profile management endpoints
 

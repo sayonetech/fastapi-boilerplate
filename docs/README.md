@@ -23,20 +23,20 @@ Welcome to the Madcrow Backend documentation. This directory contains detailed d
 ### 🔐 Authentication & Security
 
 - **[Authentication System](./authentication.md)** - Secure authentication with JWT tokens
-- **[Protection System](./PROTECTION_SYSTEM.md)** - Route protection and authorization middleware
-- **[Security Headers](./SECURITY_HEADERS.md)** - Security headers middleware implementation
+- **[Protection System](./protection-system.md)** - Route protection and authorization middleware
+- **[Security Headers](./security-headers.md)** - Security headers middleware implementation
 - **[Login Decorator](./login-decorator.md)** - Login decorator usage and patterns
 
 ### 🏗️ Core Architecture
 
 - **[Event System](./events.md)** - Event-driven architecture with Blinker signals
-- **[Class-Based Views (CBV)](./CBV_README.md)** - FastAPI class-based views implementation guide
-- **[Error Handling](./ERROR_HANDLING.md)** - Comprehensive error handling system
+- **[Class-Based Views (CBV)](./class-based-views.md)** - FastAPI class-based views implementation guide
+- **[Error Handling](./error-handling.md)** - Comprehensive error handling system
 
 ### 💾 Data & Infrastructure
 
-- **[Database Setup](./DATABASE_SETUP.md)** - Database configuration and migration guide
-- **[Redis Extension](./REDIS_EXTENSION.md)** - Redis integration for caching and sessions
+- **[Database Setup](./database-setup.md)** - Database configuration and migration guide
+- **[Redis Extension](./redis-extension.md)** - Redis integration for caching and sessions
 
 ### 📱 API Documentation
 
@@ -44,7 +44,7 @@ Welcome to the Madcrow Backend documentation. This directory contains detailed d
 
 ### 🚀 Production & Deployment
 
-- **[Production Checklist](./PRODUCTION_CHECKLIST.md)** - Comprehensive production readiness checklist
+- **[Production Checklist](./production-checklist.md)** - Comprehensive production readiness checklist
 
 ## 🚀 Quick Start
 
@@ -57,21 +57,21 @@ Welcome to the Madcrow Backend documentation. This directory contains detailed d
 | Set up the project       | [Getting Started Guide](./getting-started.md)     |
 | Implement authentication | [Authentication System](./authentication.md)      |
 | Create event handlers    | [Event System](./events.md)                       |
-| Build new API endpoints  | [Class-Based Views](./CBV_README.md)              |
-| Configure security       | [Security Headers](./SECURITY_HEADERS.md)         |
-| Set up database          | [Database Setup](./DATABASE_SETUP.md)             |
-| Deploy to production     | [Production Checklist](./PRODUCTION_CHECKLIST.md) |
+| Build new API endpoints  | [Class-Based Views](./class-based-views.md)       |
+| Configure security       | [Security Headers](./security-headers.md)         |
+| Set up database          | [Database Setup](./database-setup.md)             |
+| Deploy to production     | [Production Checklist](./production-checklist.md) |
 
 ### Step-by-Step Setup
 
 1. **Getting Started**: Follow the [Getting Started Guide](./getting-started.md) for complete setup
 2. **Authentication**: Set up user authentication with the [Authentication System guide](./authentication.md)
-3. **Database Setup**: Use the [Database Setup guide](./DATABASE_SETUP.md) for database configuration
+3. **Database Setup**: Use the [Database Setup guide](./database-setup.md) for database configuration
 4. **Event System**: Learn about event-driven architecture with the [Event System guide](./events.md)
-5. **Development**: Check the [CBV guide](./CBV_README.md) for implementing new API endpoints
-6. **Security Setup**: Follow the [Security Headers guide](./SECURITY_HEADERS.md) to configure security middleware
-7. **Protection System**: Configure route protection with the [Protection System guide](./PROTECTION_SYSTEM.md)
-8. **Production Readiness**: Review the [Production Checklist](./PRODUCTION_CHECKLIST.md) before deployment
+5. **Development**: Check the [CBV guide](./class-based-views.md) for implementing new API endpoints
+6. **Security Setup**: Follow the [Security Headers guide](./security-headers.md) to configure security middleware
+7. **Protection System**: Configure route protection with the [Protection System guide](./protection-system.md)
+8. **Production Readiness**: Review the [Production Checklist](./production-checklist.md) before deployment
 
 ## 🔍 Production Audit
 
