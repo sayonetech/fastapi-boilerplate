@@ -152,7 +152,7 @@ class AuthService:
             AuthenticationError: If user not found
         """
         try:
-            statement = select(Account).where(Account.email == email, Account.is_deleted is False)
+            statement = select(Account).where(Account.email == email, Account.is_deleted == False)
             user = self.db_session.exec(statement).first()
 
             if not user:
@@ -295,7 +295,7 @@ class AuthService:
             Account or None if not found
         """
         try:
-            statement = select(Account).where(Account.id == user_id, Account.is_deleted is False)
+            statement = select(Account).where(Account.id == user_id, Account.is_deleted == False)
             return self.db_session.exec(statement).first()
 
         except Exception:
