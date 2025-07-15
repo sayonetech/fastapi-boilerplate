@@ -290,9 +290,9 @@ Password validation failed: Password must be at least 8 characters long
 
 1. **Read Documentation**: Check out the [Authentication System](./authentication.md) guide
 2. **API Reference**: Review the [API Reference](./api-reference.md) for all endpoints
-3. **Production Setup**: Follow the [Production Checklist](./PRODUCTION_CHECKLIST.md)
-4. **Security**: Configure [Security Headers](./SECURITY_HEADERS.md)
-5. **Development**: Learn about [Class-Based Views](./CBV_README.md)
+3. **Production Setup**: Follow the [Production Checklist](./production-checklist.md)
+4. **Security**: Configure [Security Headers](./security-headers.md)
+5. **Development**: Learn about [Class-Based Views](./class-based-views.md)
 
 ## Support
 

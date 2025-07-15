@@ -138,4 +138,4 @@ If password validation fails:
 
 - [Getting Started Guide](./getting-started.md) - Complete setup instructions
 - [Authentication System](./authentication.md) - Authentication details
-- [Database Setup](./DATABASE_SETUP.md) - Database configuration
+- [Database Setup](./database-setup.md) - Database configuration
