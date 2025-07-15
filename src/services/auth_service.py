@@ -5,7 +5,7 @@ import logging
 # datetime imports moved to Account model
 from uuid import UUID
 
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from ..entities.account import Account
 from ..entities.status import AccountStatus
@@ -152,8 +152,8 @@ class AuthService:
             AuthenticationError: If user not found
         """
         try:
-            statement = select(Account).where(Account.email == email, Account.is_deleted == False)
-            user = self.db_session.exec(statement).first()
+            # Use Account model method for consistency
+            user = Account.get_by_email(self.db_session, email.strip().lower())
 
             if not user:
                 logger.warning(f"User not found for email: {email}")
@@ -295,8 +295,8 @@ class AuthService:
             Account or None if not found
         """
         try:
-            statement = select(Account).where(Account.id == user_id, Account.is_deleted == False)
-            return self.db_session.exec(statement).first()
+            # Use Account model method for consistency
+            return Account.get_by_id(self.db_session, user_id)
 
         except Exception:
             logger.exception(f"Error fetching user by ID: {user_id}")

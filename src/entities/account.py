@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from typing import Optional
 from uuid import UUID, uuid4
 
+from sqlalchemy import false
 from sqlmodel import Field, Session, select
 
 from .base import Base
@@ -95,19 +96,25 @@ class Account(Base, table=True):
     @classmethod
     def get_by_email(cls, session: Session, email: str) -> Optional["Account"]:
         """Get account by email address."""
-        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted == False)
+        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted == false())
         return session.exec(statement).first()
 
     @classmethod
     def get_active_by_email(cls, session: Session, email: str) -> Optional["Account"]:
         """Get active account by email address."""
         statement = select(cls).where(
-            cls.email == email.lower(), cls.status == AccountStatus.ACTIVE, cls.is_deleted == False
+            cls.email == email.lower(), cls.status == AccountStatus.ACTIVE, cls.is_deleted == false()
         )
         return session.exec(statement).first()
 
     @classmethod
     def email_exists(cls, session: Session, email: str) -> bool:
         """Check if email already exists."""
-        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted == False)
+        statement = select(cls).where(cls.email == email.lower(), cls.is_deleted == false())
         return session.exec(statement).first() is not None
+
+    @classmethod
+    def get_by_id(cls, session: Session, user_id: UUID) -> Optional["Account"]:
+        """Get account by ID."""
+        statement = select(cls).where(cls.id == user_id, cls.is_deleted == false())
+        return session.exec(statement).first()
