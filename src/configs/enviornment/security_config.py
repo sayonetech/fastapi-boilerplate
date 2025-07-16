@@ -20,6 +20,24 @@ class SecurityConfig(BaseSettings):
         default=False,
     )
 
+    # Rate Limiting Configuration
+    RATE_LIMIT_LOGIN_ENABLED: bool = Field(
+        description="Enable rate limiting for login attempts",
+        default=True,
+    )
+    RATE_LIMIT_LOGIN_MAX_ATTEMPTS: int = Field(
+        description="Maximum number of failed login attempts before rate limiting",
+        default=5,
+        ge=1,
+        le=100,
+    )
+    RATE_LIMIT_LOGIN_TIME_WINDOW: int = Field(
+        description="Time window in seconds for login rate limiting",
+        default=900,  # 15 minutes
+        ge=60,
+        le=86400,  # 24 hours
+    )
+
     # Security Headers Configuration
     SECURITY_HEADERS_ENABLED: bool = Field(
         description="Enable or disable security headers middleware",

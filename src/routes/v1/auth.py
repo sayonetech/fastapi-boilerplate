@@ -8,7 +8,7 @@ from fastapi import HTTPException, Request
 
 from ...dependencies.auth import AuthServiceDep, ClientIP, CurrentUser
 from ...dependencies.redis import RedisServiceDep
-from ...exceptions import AccountError, AuthenticationError
+from ...exceptions import AccountError, AuthenticationError, RateLimitExceededError
 from ...models.auth import (
     LoginRequest,
     LogoutRequest,
@@ -16,6 +16,7 @@ from ...models.auth import (
     SessionInfo,
     SessionValidationResponse,
 )
+from ...models.rate_limit import RateLimitExceededResponse, RateLimitInfo
 from ...models.token import LoginResponse as TokenLoginResponse
 from ...models.token import (
     RefreshTokenRequest,
@@ -78,6 +79,30 @@ class AuthController:
 
             # Return standard response
             return TokenLoginResponse(result="success", data=token_pair)
+
+        except RateLimitExceededError as e:
+            # Handle rate limiting with proper HTTP 429 response
+            logger.warning(f"Rate limit exceeded for login: {request.email}")
+
+            rate_limit_info = RateLimitInfo(
+                is_limited=True,
+                remaining_attempts=0,
+                max_attempts=e.context["max_attempts"],
+                time_window=e.context["time_window"],
+                time_until_reset=e.context["retry_after"],
+            )
+
+            response_data = RateLimitExceededResponse(
+                message=e.message,
+                rate_limit_info=rate_limit_info,
+                retry_after=e.context["retry_after"],
+            )
+
+            raise HTTPException(
+                status_code=429,
+                detail=response_data.model_dump(),
+                headers={"Retry-After": str(e.context["retry_after"])},
+            )
 
         except (AuthenticationError, AccountError) as e:
             # Convert our custom errors to HTTP exceptions

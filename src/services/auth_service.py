@@ -16,6 +16,7 @@ from ..exceptions import (
     AccountLoginError,
     AccountNotVerifiedError,
     AuthenticationError,
+    RateLimitExceededError,
 )
 from ..libs.password import (
     create_password_hash,
@@ -26,6 +27,7 @@ from ..models.auth import PasswordChangeResponse
 from ..models.token import TokenPair
 from ..services.token_service import get_token_service
 from ..utils.error_factory import ErrorFactory
+from ..utils.rate_limiter import get_login_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -66,10 +68,40 @@ class AuthService:
         # Note: Basic validation is handled by LoginRequest model
 
         try:
+            # Check if rate limiting is enabled
+            from ..configs import madcrow_config
+
+            email_normalized = email.strip().lower()
+            redis_client = None
+            rate_limiter = None
+
+            if madcrow_config.RATE_LIMIT_LOGIN_ENABLED:
+                # Get Redis client for rate limiting
+                from ..dependencies.redis import get_redis_client
+
+                redis_client = get_redis_client()
+                rate_limiter = get_login_rate_limiter()
+
+                # Check rate limiting before any authentication attempts
+                if rate_limiter.is_rate_limited(email_normalized, redis_client):
+                    retry_after = (
+                        rate_limiter.get_time_until_reset(email_normalized, redis_client) or rate_limiter.time_window
+                    )
+                    logger.warning(f"Rate limit exceeded for login attempt: {email_normalized}")
+                    raise RateLimitExceededError(
+                        identifier=email_normalized,
+                        max_attempts=rate_limiter.max_attempts,
+                        time_window=rate_limiter.time_window,
+                        retry_after=retry_after,
+                    )
+
             # Find user by email using Account model method
-            user = Account.get_by_email(self.db_session, email.strip().lower())
+            user = Account.get_by_email(self.db_session, email_normalized)
             if not user:
-                logger.warning(f"User not found for email: {email}")
+                logger.warning(f"User not found for email: {email_normalized}")
+                # Increment rate limit for failed attempts (user not found)
+                if rate_limiter and redis_client:
+                    rate_limiter.increment_rate_limit(email_normalized, redis_client)
                 raise ErrorFactory.create_authentication_error(
                     message="Invalid email or password", context={"reason": "user_not_found"}
                 )
@@ -102,19 +134,27 @@ class AuthService:
 
             # Verify password
             if not self._verify_password(password, user.password, user.password_salt):
-                logger.warning(f"Failed login attempt for email: {email}")
+                logger.warning(f"Failed login attempt for email: {email_normalized}")
+                # Increment rate limit for failed password attempts
+                if rate_limiter and redis_client:
+                    rate_limiter.increment_rate_limit(email_normalized, redis_client)
                 raise ErrorFactory.create_authentication_error(
                     message="Invalid email or password", context={"reason": "invalid_credentials"}
                 )
+
+            # Successful authentication - reset rate limit
+            if rate_limiter and redis_client:
+                rate_limiter.reset_rate_limit(email_normalized, redis_client)
 
             # Update last login information using Account model method
             user.update_last_login(login_ip)
             self.db_session.commit()
 
             # Create token pair with Redis support
-            from ..dependencies.redis import get_redis_client
+            if not redis_client:
+                from ..dependencies.redis import get_redis_client
 
-            redis_client = get_redis_client()
+                redis_client = get_redis_client()
             token_service = get_token_service(redis_client)
             token_pair = token_service.create_token_pair(user)
 
@@ -128,6 +168,7 @@ class AuthService:
             AccountBannedError,
             AccountClosedError,
             AccountLoginError,
+            RateLimitExceededError,
         ):
             # Re-raise our custom errors
             raise

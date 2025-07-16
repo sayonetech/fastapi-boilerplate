@@ -16,6 +16,7 @@ from .business import (
     AuthorizationError,
     InvalidAccountStatusError,
     PermissionDeniedError,
+    RateLimitExceededError,
 )
 from .database import (
     DatabaseConnectionError,
@@ -59,6 +60,7 @@ __all__ = [
     "MissingFieldError",
     "PasswordValidationError",
     "PermissionDeniedError",
+    "RateLimitExceededError",
     "RecordNotFoundError",
     "SchemaValidationError",
     "ValidationError",

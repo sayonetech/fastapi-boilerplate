@@ -255,3 +255,35 @@ class PermissionDeniedError(AuthorizationError):
             required_permission=permission,
             context=perm_context,
         )
+
+
+class RateLimitExceededError(MadcrowHTTPError):
+    """Raised when rate limit is exceeded."""
+
+    def __init__(
+        self,
+        identifier: str,
+        max_attempts: int,
+        time_window: int,
+        retry_after: int,
+        context: dict[str, Any] | None = None,
+    ) -> None:
+        # Build context with rate limit details
+        rate_limit_context = context or {}
+        rate_limit_context.update(
+            {
+                "identifier": identifier,
+                "max_attempts": max_attempts,
+                "time_window": time_window,
+                "retry_after": retry_after,
+            }
+        )
+
+        message = f"Rate limit exceeded for {identifier}. Try again in {retry_after} seconds."
+
+        super().__init__(
+            message=message,
+            status_code=429,
+            error_code="RATE_LIMIT_EXCEEDED",
+            context=rate_limit_context,
+        )
