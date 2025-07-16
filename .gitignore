@@ -106,7 +106,7 @@ celerybeat.pid
 .env
 .env.*
 !.env.example
-!.env.production.example
+!.config/.env.production.example
 .venv
 env/
 venv/

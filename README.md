@@ -76,6 +76,14 @@
 
 The project uses Alembic for database migrations. The migration system is already configured to work with our application's database settings.
 
+#### One-Time Setup (Only once per project)
+
+```bash
+alembic init alembic
+```
+
+> _Initializes the Alembic folder and configuration files. Do this once when setting up migrations for the first time._
+
 #### 1. Check Current Migration State
 
 ```bash
@@ -84,13 +92,19 @@ uv run alembic current
 
 > _Shows the current migration revision applied to the database._
 
-#### 2. Apply All Migrations (First Time Setup)
+#### 2. Generate and Apply Initial Migration (First-Time Setup)
+
+```bash
+uv run alembic revision --autogenerate -m "initial schema"
+```
+
+> _Generates the initial migration based on your current models._
 
 ```bash
 uv run alembic upgrade head
 ```
 
-> _This applies all migrations to bring your database schema up to date. Run this after setting up the database._
+> _This applies all migrations to bring your database schema up to date._
 
 #### 3. Create a New Migration After Changing Models
 
@@ -187,7 +201,9 @@ This will prompt for:
 
 - Email address
 - Full name
-- Password (securely hashed with bcrypt)
+- Password (securely hashed with SHA-256 + salt)
+
+For more CLI commands and detailed usage, see the [Commands Documentation](docs/commands.md).
 
 ## Environment Setup
 
@@ -403,11 +419,31 @@ uv run pre-commit clean
 
 For detailed documentation on specific topics, see the [docs/](./docs/) directory:
 
-- **[Production Checklist](./docs/PRODUCTION_CHECKLIST.md)** - 🚀 Production readiness checklist
-- **[Security Headers](./docs/SECURITY_HEADERS.md)** - Comprehensive security headers implementation
+### 📖 Core Documentation
+
+- **[Documentation Index](./docs/README.md)** - Complete documentation overview and navigation
+- **[Getting Started](./docs/getting-started.md)** - Quick start guide for new developers
+- **[Commands](./docs/commands.md)** - CLI commands and usage
+
+### 🏗️ Development & Architecture
+
 - **[Class-Based Views](./docs/CBV_README.md)** - FastAPI CBV implementation guide
 - **[Database Setup](./docs/DATABASE_SETUP.md)** - Database configuration and migrations
-- **[Documentation Index](./docs/README.md)** - Complete documentation overview
+- **[Redis Extension](./docs/REDIS_EXTENSION.md)** - Redis integration and configuration
+- **[Error Handling](./docs/ERROR_HANDLING.md)** - Error handling patterns and best practices
+
+### 🔐 Authentication & Security
+
+- **[Authentication](./docs/authentication.md)** - Authentication system overview and implementation
+- **[Login Decorator](./docs/login-decorator.md)** - Login decorator usage and patterns
+- **[Protection System](./docs/PROTECTION_SYSTEM.md)** - Class-level and method-level protection system
+- **[Security Headers](./docs/SECURITY_HEADERS.md)** - Comprehensive security headers implementation
+
+### 🚀 Production & API
+
+- **[Production Checklist](./docs/PRODUCTION_CHECKLIST.md)** - Production readiness checklist
+- **[API Reference](./docs/api-reference.md)** - API endpoints and usage documentation
+- **[Profile API](./docs/profile-api.md)** - User profile management endpoints
 
 ### 🔍 Production Readiness
 

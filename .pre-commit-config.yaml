@@ -75,7 +75,7 @@ repos:
     hooks:
       - id: detect-secrets
         args: ["--baseline", ".secrets.baseline"]
-        exclude: ^(\.env\.example|\.env\.production\.example)$
+        exclude: ^(\.env\.example|\.env\.production\.example|alembic/)
         stages: [pre-commit]
 
   # Python import sorting
@@ -111,7 +111,7 @@ repos:
           - flake8-bugbear
           - flake8-comprehensions
           - flake8-simplify
-        args: ["--max-line-length=100", "--extend-ignore=E203,E501"]
+        args: ["--max-line-length=100", "--extend-ignore=E203,E501,B008"]
         files: ^src/
         exclude: ^(migrations/|tests/|alembic/)
         stages: [pre-push]

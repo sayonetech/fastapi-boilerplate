@@ -99,6 +99,101 @@ class InvalidAccountStatusError(AccountError):
         )
 
 
+class AccountNotVerifiedError(AccountError):
+    """Raised when attempting to login with an unverified account."""
+
+    def __init__(
+        self,
+        email: str | None = None,
+        account_id: UUID | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> None:
+        search_context = context or {}
+        if email:
+            search_context["email"] = email
+        if account_id:
+            search_context["account_id"] = str(account_id)
+
+        super().__init__(
+            message="Account is not verified. Please check your email and verify your account.",
+            status_code=401,
+            error_code="ACCOUNT_NOT_VERIFIED",
+            context=search_context,
+        )
+
+
+class AccountBannedError(AccountError):
+    """Raised when attempting to login with a banned account."""
+
+    def __init__(
+        self,
+        message: str = "Account is banned.",
+        email: str | None = None,
+        account_id: UUID | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> None:
+        search_context = context or {}
+        if email:
+            search_context["email"] = email
+        if account_id:
+            search_context["account_id"] = str(account_id)
+
+        super().__init__(
+            message=message,
+            status_code=401,
+            error_code="ACCOUNT_BANNED",
+            context=search_context,
+        )
+
+
+class AccountClosedError(AccountError):
+    """Raised when attempting to login with a closed account."""
+
+    def __init__(
+        self,
+        message: str = "Account is closed.",
+        email: str | None = None,
+        account_id: UUID | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> None:
+        search_context = context or {}
+        if email:
+            search_context["email"] = email
+        if account_id:
+            search_context["account_id"] = str(account_id)
+
+        super().__init__(
+            message=message,
+            status_code=401,
+            error_code="ACCOUNT_CLOSED",
+            context=search_context,
+        )
+
+
+class AccountLoginError(AccountError):
+    """Raised when account cannot login for various reasons."""
+
+    def __init__(
+        self,
+        message: str,
+        email: str | None = None,
+        account_id: UUID | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> None:
+        search_context = context or {}
+        if email:
+            search_context["email"] = email
+        if account_id:
+            search_context["account_id"] = str(account_id)
+
+        super().__init__(
+            message=message,
+            status_code=401,
+            error_code="ACCOUNT_LOGIN_ERROR",
+            context=search_context,
+        )
+
+
 class AuthenticationError(MadcrowHTTPError):
     """Raised when authentication fails."""
 
@@ -159,4 +254,36 @@ class PermissionDeniedError(AuthorizationError):
             message=message,
             required_permission=permission,
             context=perm_context,
+        )
+
+
+class RateLimitExceededError(MadcrowHTTPError):
+    """Raised when rate limit is exceeded."""
+
+    def __init__(
+        self,
+        identifier: str,
+        max_attempts: int,
+        time_window: int,
+        retry_after: int,
+        context: dict[str, Any] | None = None,
+    ) -> None:
+        # Build context with rate limit details
+        rate_limit_context = context or {}
+        rate_limit_context.update(
+            {
+                "identifier": identifier,
+                "max_attempts": max_attempts,
+                "time_window": time_window,
+                "retry_after": retry_after,
+            }
+        )
+
+        message = f"Rate limit exceeded for {identifier}. Try again in {retry_after} seconds."
+
+        super().__init__(
+            message=message,
+            status_code=429,
+            error_code="RATE_LIMIT_EXCEEDED",
+            context=rate_limit_context,
         )

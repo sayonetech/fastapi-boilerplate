@@ -1,10 +1,13 @@
 """Class-Based Views implementation for FastAPI routers."""
 
 import inspect
+import logging
 from collections.abc import Callable
 
 from fastapi import APIRouter
 from fastapi.routing import APIRoute
+
+logger = logging.getLogger(__name__)
 
 
 class CBV:
@@ -117,6 +120,36 @@ class CBV:
         self.router.add_api_route(
             path=route_info["path"], endpoint=handler, methods=route_info["methods"], **route_info.get("kwargs", {})
         )
+
+        # Register route-controller mapping for protection middleware
+        self._register_route_protection_mapping(cls, method_name, route_info)
+
+    def _register_route_protection_mapping(self, cls: type, method_name: str, route_info: dict) -> None:
+        """
+        Register route-controller mapping for the protection system.
+
+        Args:
+            cls: Controller class
+            method_name: Method name
+            route_info: Route information dictionary
+        """
+        try:
+            from .protection import register_route_controller_mapping
+
+            # Build full route path (including router prefix)
+            router_prefix = getattr(self.router, "prefix", "")
+            route_path = route_info["path"]
+            full_path = f"{router_prefix}{route_path}".rstrip("/") or "/"
+
+            # Register mapping for each HTTP method
+            for method in route_info["methods"]:
+                register_route_controller_mapping(full_path, method.upper(), cls, method_name)
+
+        except ImportError:
+            # Protection system not available, skip registration
+            logger.debug("Protection system not available, skipping route registration")
+        except Exception as e:
+            logger.warning(f"Failed to register route protection mapping: {e}")
 
 
 def route(path: str, methods: list[str] | None = None, **kwargs) -> Callable:

@@ -6,12 +6,17 @@ from .base import (
 )
 from .business import (
     AccountAlreadyExistsError,
+    AccountBannedError,
+    AccountClosedError,
     AccountError,
+    AccountLoginError,
     AccountNotFoundError,
+    AccountNotVerifiedError,
     AuthenticationError,
     AuthorizationError,
     InvalidAccountStatusError,
     PermissionDeniedError,
+    RateLimitExceededError,
 )
 from .database import (
     DatabaseConnectionError,
@@ -33,8 +38,12 @@ from .validation import (
 
 __all__ = [
     "AccountAlreadyExistsError",
+    "AccountBannedError",
+    "AccountClosedError",
     "AccountError",
+    "AccountLoginError",
     "AccountNotFoundError",
+    "AccountNotVerifiedError",
     "AuthenticationError",
     "AuthorizationError",
     "DatabaseConnectionError",
@@ -51,6 +60,7 @@ __all__ = [
     "MissingFieldError",
     "PasswordValidationError",
     "PermissionDeniedError",
+    "RateLimitExceededError",
     "RecordNotFoundError",
     "SchemaValidationError",
     "ValidationError",

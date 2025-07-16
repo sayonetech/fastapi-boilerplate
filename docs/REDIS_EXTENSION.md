@@ -1,6 +1,6 @@
 # Redis Extension
 
-This document describes the Redis extension implementation ported from Dify and adapted for the FastAPI Madcrow project.
+This document describes the Redis extension implementation for the FastAPI Madcrow project.
 
 ## Overview
 
@@ -36,7 +36,7 @@ The Redis extension provides comprehensive Redis functionality including:
 
 ### Environment Variables
 
-Based on Dify's Redis configuration, the following environment variables are supported:
+The following environment variables are supported for Redis configuration:
 
 #### Basic Redis Configuration
 
@@ -370,14 +370,14 @@ REDIS_SENTINEL_PASSWORD=your_sentinel_password
 3. **Access Control**: Implement Redis ACLs for fine-grained access control
 4. **Firewall**: Restrict Redis port access to authorized servers only
 
-## Integration with Dify
+## Integration Features
 
-This Redis extension is based on Dify's Redis implementation and provides:
+This Redis extension provides comprehensive Redis functionality including:
 
-- **Compatible Configuration**: Uses the same environment variables as Dify
+- **Flexible Configuration**: Supports multiple environment variable formats
 - **Sentinel Support**: Full Redis Sentinel support for high availability
 - **Connection Pooling**: Efficient connection management
 - **Error Handling**: Integrated with the application's error handling system
 - **FastAPI Integration**: Native FastAPI dependency injection support
 
-The extension maintains compatibility with Dify's Redis patterns while providing additional FastAPI-specific features and enhanced error handling.
+The extension provides production-ready Redis integration with FastAPI-specific features and comprehensive error handling.

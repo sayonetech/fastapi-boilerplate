@@ -306,10 +306,10 @@ curl -I https://yourdomain.com/api/v1/health
 
 ## 🎯 Quick Production Readiness Score
 
-**Security**: **_/10
-**Performance**: _**/10
-**Monitoring**: **_/10
-**Documentation**: _**/10
+**Security**: **\_/10
+**Performance**: \_**/10
+**Monitoring**: **\_/10
+**Documentation**: \_**/10
 **Testing**: \_\_\_/10
 
 **Overall Score**: \_\_\_/50
