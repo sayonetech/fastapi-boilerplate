@@ -119,7 +119,7 @@ class AuthService:
                 self._emit_login_failed_event(
                     email=email, failure_reason="user_not_found", ip_address=login_ip, timestamp=login_timestamp
                 )
-                
+
                 raise ErrorFactory.create_authentication_error(
                     message="Invalid email or password", context={"reason": "user_not_found"}
                 )
