@@ -28,7 +28,7 @@ class SecurityConfig(BaseSettings):
     RATE_LIMIT_LOGIN_MAX_ATTEMPTS: int = Field(
         description="Maximum number of failed login attempts before rate limiting",
         default=5,
-        ge=1,
+        ge=0,
         le=100,
     )
     RATE_LIMIT_LOGIN_TIME_WINDOW: int = Field(
