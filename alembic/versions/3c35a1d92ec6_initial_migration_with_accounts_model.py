@@ -1,8 +1,8 @@
-"""initial
+"""initial migration with accounts model
 
-Revision ID: 72f9d34a7b8b
+Revision ID: 3c35a1d92ec6
 Revises:
-Create Date: 2025-07-15 22:30:14.347386
+Create Date: 2025-07-17 23:35:04.182986
 
 """
 from collections.abc import Sequence
@@ -13,7 +13,7 @@ import sqlmodel
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '72f9d34a7b8b'
+revision: str = '3c35a1d92ec6'
 down_revision: str | Sequence[str] | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -42,7 +42,8 @@ def upgrade() -> None:
     sa.Column('activation_token', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('token_expires_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['created_by'], ['accounts.id'], ),
-    sa.PrimaryKeyConstraint('id', name='account_pkey')
+    sa.PrimaryKeyConstraint('id', name='account_pkey'),
+    sa.UniqueConstraint('email')
     )
     op.create_index('account_email_idx', 'accounts', ['email'], unique=False)
     # ### end Alembic commands ###

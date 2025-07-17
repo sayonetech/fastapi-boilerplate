@@ -18,7 +18,7 @@ class Account(Base, table=True):
     id: UUID = Field(default_factory=uuid4)
 
     name: str = Field(nullable=False)
-    email: str = Field(nullable=False)
+    email: str = Field(nullable=False, unique=True)
     password: str | None = Field(default=None)
     password_salt: str | None = Field(default=None)
 
