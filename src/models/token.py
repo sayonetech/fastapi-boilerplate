@@ -1,6 +1,6 @@
 """Token models for JWT-based authentication."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class TokenPair(BaseModel):
@@ -46,6 +46,14 @@ class RegisterRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=255, description="User full name")
     email: str = Field(..., description="User email address")
     password: str = Field(..., min_length=8, max_length=128, description="User password")
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def validate_email_field(cls, v):
+        """Validate email using custom validation rules."""
+        from ..utils.validation import ValidationUtils
+
+        return ValidationUtils.validate_email(v)
 
 
 class TokenClaims(BaseModel):
