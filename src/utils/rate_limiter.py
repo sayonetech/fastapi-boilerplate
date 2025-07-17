@@ -62,9 +62,10 @@ class RateLimiter:
 
             # Count current attempts
             attempts = redis_client.zcard(key)
+            attempts_count = int(attempts) if attempts else 0
 
-            if attempts and int(attempts) >= self.max_attempts:
-                logger.warning(f"Rate limit exceeded for {identifier}: {attempts}/{self.max_attempts}")
+            if attempts_count >= self.max_attempts:
+                logger.warning(f"Rate limit exceeded for {identifier}: {attempts_count}/{self.max_attempts}")
                 return True
 
             return False

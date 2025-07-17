@@ -30,7 +30,7 @@ class RegisterResponse(BaseModel):
 class RefreshTokenRequest(BaseModel):
     """Request model for token refresh."""
 
-    refresh_token: str = Field(..., description="Refresh token")
+    refresh_token: str = Field(..., min_length=1, description="Refresh token")
 
 
 class RefreshTokenResponse(BaseModel):
