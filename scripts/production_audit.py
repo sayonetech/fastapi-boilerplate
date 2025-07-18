@@ -203,7 +203,7 @@ class ProductionAuditor:
                 print(f"  ... and {len(self.passed) - 5} more")
 
         print("\n📚 RECOMMENDATIONS:")
-        print("  1. Review docs/PRODUCTION_CHECKLIST.md for complete checklist")
+        print("  1. Review docs/production-checklist.md for complete checklist")
         print("  2. Test security headers: uv run python test_security_headers.py")
         print("  3. Run online security tests:")
         print("     - https://securityheaders.com/")

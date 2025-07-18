@@ -143,6 +143,7 @@ name = "beco-madcrow"
 source = { virtual = "." }
 dependencies = [
     { name = "bcrypt" },
+    { name = "blinker" },
     { name = "click" },
     { name = "psutil" },
     { name = "pydantic" },
@@ -237,6 +238,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "bcrypt", specifier = ">=4.3.0" },
+    { name = "blinker", specifier = ">=1.9.0" },
     { name = "click", specifier = ">=8.2.1" },
     { name = "psutil", specifier = ">=7.0.0" },
     { name = "pydantic", specifier = ">=2.0.0" },

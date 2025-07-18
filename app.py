@@ -98,8 +98,10 @@ def initialize_extensions(app: BecoApp):
         ext_cors,
         ext_db,
         ext_error_handling,
+        ext_events,
         ext_logging,
         ext_logging_middleware,
+        ext_openapi,
         ext_protection,
         ext_redis,
         ext_security,
@@ -120,7 +122,9 @@ def initialize_extensions(app: BecoApp):
         ext_warnings,
         ext_db,
         ext_redis,  # Redis should be initialized after database
+        ext_events,  # Event system should be initialized after database and redis
         ext_protection,  # Protection middleware should be initialized after routes are registered
+        ext_openapi,
     ]
 
     for ext in extensions:
