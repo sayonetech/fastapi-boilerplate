@@ -7,6 +7,18 @@ class SecurityConfig(BaseSettings):
     Security-related configurations for the application
     """
 
+    def model_post_init(self, __context) -> None:
+        """Validate security configuration after initialization."""
+        # Warn about emergency lockdown mode
+        if self.RATE_LIMIT_LOGIN_MAX_ATTEMPTS == 0 and self.RATE_LIMIT_LOGIN_ENABLED:
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.warning(
+                "EMERGENCY LOCKDOWN MODE: RATE_LIMIT_LOGIN_MAX_ATTEMPTS=0 will block ALL login attempts. "
+                "Set RATE_LIMIT_LOGIN_ENABLED=false to disable rate limiting entirely."
+            )
+
     SECRET_KEY: str = Field(
         description="Secret key for secure session cookie signing."
         "Make sure you are changing this key for your deployment with a strong key."
@@ -26,7 +38,9 @@ class SecurityConfig(BaseSettings):
         default=True,
     )
     RATE_LIMIT_LOGIN_MAX_ATTEMPTS: int = Field(
-        description="Maximum number of failed login attempts before rate limiting",
+        description="Maximum number of failed login attempts before rate limiting. "
+        "Set to 0 for emergency lockdown mode (blocks ALL login attempts). "
+        "Use RATE_LIMIT_LOGIN_ENABLED=false to disable rate limiting entirely.",
         default=5,
         ge=0,
         le=100,

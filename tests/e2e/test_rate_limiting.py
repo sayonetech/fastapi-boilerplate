@@ -354,3 +354,45 @@ class TestLoginRateLimiting:
             # Should still be able to attempt from different IP
             response = test_client.post("/api/v1/auth/login", json=wrong_login_data)
             assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    @patch("src.configs.madcrow_config")
+    def test_emergency_lockdown_mode(self, mock_config, test_client):
+        """Test emergency lockdown mode with max_attempts=0."""
+        # Configure emergency lockdown mode
+        mock_config.RATE_LIMIT_LOGIN_ENABLED = True
+        mock_config.RATE_LIMIT_LOGIN_MAX_ATTEMPTS = 0  # Emergency lockdown
+        mock_config.RATE_LIMIT_LOGIN_TIME_WINDOW = 300
+
+        # Register a user first
+        register_data = {
+            "name": "Lockdown Test User",
+            "email": "lockdown@example.com",
+            "password": "CorrectPassword123!",  # pragma: allowlist secret
+        }
+        response = test_client.post("/api/v1/auth/register", json=register_data)
+        assert response.status_code == status.HTTP_200_OK
+
+        # Mock rate limiter to simulate emergency lockdown
+        with patch("src.utils.rate_limiter.RateLimiter") as mock_rate_limiter_class:
+            mock_rate_limiter = mock_rate_limiter_class.return_value
+
+            # In emergency lockdown mode, is_rate_limited should always return True
+            mock_rate_limiter.is_rate_limited.return_value = True
+            mock_rate_limiter.max_attempts = 0
+            mock_rate_limiter.time_window = 300
+
+            # Try to login with correct credentials - should be blocked due to lockdown
+            login_data = {
+                "email": "lockdown@example.com",
+                "password": "CorrectPassword123!",  # pragma: allowlist secret
+            }
+
+            response = test_client.post("/api/v1/auth/login", json=login_data)
+
+            # Should be rate limited even with correct credentials
+            assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+            response_data = response.json()
+            assert response_data["detail"]["rate_limit_info"]["max_attempts"] == 0
+            assert response_data["detail"]["rate_limit_info"]["is_limited"] is True
+            assert "Retry-After" in response.headers

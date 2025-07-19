@@ -183,6 +183,13 @@ def get_login_rate_limiter() -> RateLimiter:
     """Get login rate limiter with configuration from settings."""
     from ..configs import madcrow_config
 
+    # Log warning if emergency lockdown mode is enabled
+    if madcrow_config.RATE_LIMIT_LOGIN_MAX_ATTEMPTS == 0:
+        logger.warning(
+            "EMERGENCY LOCKDOWN MODE ACTIVE: max_attempts=0 will block ALL login attempts. "
+            "Set RATE_LIMIT_LOGIN_ENABLED=false to disable rate limiting entirely."
+        )
+
     return RateLimiter(
         prefix="login_attempts",
         max_attempts=madcrow_config.RATE_LIMIT_LOGIN_MAX_ATTEMPTS,

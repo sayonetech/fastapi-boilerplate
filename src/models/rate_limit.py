@@ -10,7 +10,7 @@ class RateLimitInfo(BaseModel):
 
     remaining_attempts: int = Field(description="Number of attempts remaining before rate limiting", ge=0)
 
-    max_attempts: int = Field(description="Maximum number of attempts allowed", ge=0)
+    max_attempts: int = Field(description="Maximum number of attempts allowed (0 = emergency lockdown mode)", ge=0)
 
     time_window: int = Field(description="Time window in seconds for rate limiting", gt=0)
 

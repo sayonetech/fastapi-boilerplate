@@ -23,11 +23,22 @@ Rate limiting can be configured using environment variables:
 RATE_LIMIT_LOGIN_ENABLED=true
 
 # Maximum failed attempts before rate limiting (default: 5)
+# Set to 0 for emergency lockdown mode (blocks ALL login attempts)
 RATE_LIMIT_LOGIN_MAX_ATTEMPTS=5
 
 # Time window in seconds (default: 900 = 15 minutes)
 RATE_LIMIT_LOGIN_TIME_WINDOW=900
 ```
+
+### Emergency Lockdown Mode
+
+Setting `RATE_LIMIT_LOGIN_MAX_ATTEMPTS=0` enables **emergency lockdown mode**, which immediately blocks ALL login attempts regardless of previous failures. This is useful for:
+
+- **Security incidents**: Immediately prevent all authentication during a breach
+- **Maintenance windows**: Block logins during critical system updates
+- **Investigation mode**: Disable authentication while investigating suspicious activity
+
+**Note**: To completely disable rate limiting, use `RATE_LIMIT_LOGIN_ENABLED=false` instead.
 
 ## Implementation Details
 
