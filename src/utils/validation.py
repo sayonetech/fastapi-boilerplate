@@ -200,6 +200,24 @@ class ValidationUtils:
         return value
 
 
+# Backward compatibility function for validate_password_strength
+def validate_password_strength(password: str) -> tuple[bool, str]:
+    """
+    Validate password strength (returns tuple for backward compatibility).
+
+    Args:
+        password: Password to validate
+
+    Returns:
+        Tuple of (is_valid, error_message)
+    """
+    try:
+        ValidationUtils.validate_password(password)
+        return True, ""
+    except Exception as e:
+        return False, str(e)
+
+
 def create_pydantic_validators():
     """
     Create Pydantic validators using the validation utilities.

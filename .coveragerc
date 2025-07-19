@@ -1,0 +1,52 @@
+[run]
+source = src
+
+omit =
+    # Test files
+    */tests/*
+    */test_*
+    */__pycache__/*
+    */migrations/*
+    */venv/*
+    */env/*
+
+    # User requested exclusions - models, entities, exceptions
+    src/models/*
+    src/entities/*
+    src/exceptions/*
+
+    # Configuration and infrastructure files
+    src/configs/*
+    src/extensions/*
+    src/beco_madcrow.egg-info/*
+    src/__init__.py
+    src/beco_app.py
+    src/lifespan_manager.py
+
+    # Example and demo files
+    src/routes/v1/database_example.py
+    src/routes/v1/redis_example.py
+    src/services/database_example.py
+
+    # Framework and utility files
+    src/routes/base_router.py
+    src/routes/cbv.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
+
+show_missing = True
+precision = 2
+
+[html]
+directory = htmlcov
