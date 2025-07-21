@@ -58,3 +58,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         trace_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
         trace_id_var.set(trace_id)
         request_id_var.set(trace_id)
+
+
+# Alias for backward compatibility with tests
+LoggingMiddleware = RequestLoggingMiddleware

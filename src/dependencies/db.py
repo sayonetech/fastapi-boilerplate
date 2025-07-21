@@ -11,6 +11,21 @@ from src.extensions.ext_db import db_engine
 logger = logging.getLogger(__name__)
 
 
+# Backward compatibility for tests that expect SessionLocal
+class SessionLocal:
+    """Backward compatibility wrapper for tests expecting SessionLocal."""
+
+    @staticmethod
+    def __call__():
+        """Create a new database session."""
+        engine = db_engine.get_engine()
+        return Session(engine)
+
+
+# Create a singleton instance for backward compatibility
+SessionLocal = SessionLocal()
+
+
 def get_session() -> Generator[Session, None, None]:
     """
     Database session dependency with proper error handling and logging.
@@ -77,6 +92,16 @@ def get_session_no_exception() -> Generator[Session | None, None, None]:
     except Exception as e:
         logger.warning(f"Database session creation failed (non-critical): {e}")
         yield None
+
+
+# Backward compatibility function for tests
+def get_db_session() -> Generator[Session, None, None]:
+    """
+    Backward compatibility function for tests expecting get_db_session.
+
+    This is an alias for get_session() to maintain compatibility with existing tests.
+    """
+    yield from get_session()
 
 
 # Type aliases for dependency injection

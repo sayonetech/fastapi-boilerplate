@@ -51,6 +51,23 @@ coverage.json
 *.py,cover
 .hypothesis/
 .pytest_cache/
+# Additional coverage files
+.coverage-reports/
+coverage-reports/
+test-results/
+.test-results/
+*.lcov
+.nyc_output/
+coverage/
+.coverage_html/
+# Test artifacts
+test_*.db
+test_*.sqlite
+test_*.sqlite3
+*.test.db
+.test_*
+test-output/
+.test-output/
 
 # Translations
 *.mo

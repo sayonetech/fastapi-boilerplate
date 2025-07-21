@@ -62,9 +62,10 @@ class RateLimiter:
 
             # Count current attempts
             attempts = redis_client.zcard(key)
+            attempts_count = int(attempts) if attempts else 0
 
-            if attempts and int(attempts) >= self.max_attempts:
-                logger.warning(f"Rate limit exceeded for {identifier}: {attempts}/{self.max_attempts}")
+            if attempts_count >= self.max_attempts:
+                logger.warning(f"Rate limit exceeded for {identifier}: {attempts_count}/{self.max_attempts}")
                 return True
 
             return False
@@ -181,6 +182,13 @@ class RateLimiter:
 def get_login_rate_limiter() -> RateLimiter:
     """Get login rate limiter with configuration from settings."""
     from ..configs import madcrow_config
+
+    # Log warning if emergency lockdown mode is enabled
+    if madcrow_config.RATE_LIMIT_LOGIN_MAX_ATTEMPTS == 0:
+        logger.warning(
+            "EMERGENCY LOCKDOWN MODE ACTIVE: max_attempts=0 will block ALL login attempts. "
+            "Set RATE_LIMIT_LOGIN_ENABLED=false to disable rate limiting entirely."
+        )
 
     return RateLimiter(
         prefix="login_attempts",

@@ -209,3 +209,7 @@ class SecurityHeadersConfig:
             )
 
         return base_headers
+
+
+# Alias for backward compatibility with tests
+SecurityMiddleware = SecurityHeadersMiddleware

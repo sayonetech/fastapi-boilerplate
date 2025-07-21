@@ -16,7 +16,7 @@ from ..exceptions import (
 class ValidationUtils:
     """Utility class for common validation operations."""
 
-    # Email validation regex (basic but effective)
+    # Email validation regex (basic pattern)
     EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 
     # Password requirements
@@ -39,6 +39,23 @@ class ValidationUtils:
         """
         if not email:
             raise EmailValidationError(email, "Email cannot be empty")
+
+        # Strip whitespace first
+        email = email.strip()
+
+        # Check for whitespace in email
+        if " " in email:
+            raise EmailValidationError(email, "Email cannot contain spaces")
+
+        # Check for consecutive dots
+        if ".." in email:
+            raise EmailValidationError(email, "Email cannot contain consecutive dots")
+
+        # Check for dots at start/end of local part
+        if "@" in email:
+            local_part = email.split("@")[0]
+            if local_part.startswith(".") or local_part.endswith("."):
+                raise EmailValidationError(email, "Email local part cannot start or end with a dot")
 
         if not cls.EMAIL_REGEX.match(email):
             raise EmailValidationError(email, "Invalid email format")
@@ -181,6 +198,24 @@ class ValidationUtils:
             raise InvalidFieldValueError(field=field_name, value=value, allowed_values=allowed_values)
 
         return value
+
+
+# Backward compatibility function for validate_password_strength
+def validate_password_strength(password: str) -> tuple[bool, str]:
+    """
+    Validate password strength (returns tuple for backward compatibility).
+
+    Args:
+        password: Password to validate
+
+    Returns:
+        Tuple of (is_valid, error_message)
+    """
+    try:
+        ValidationUtils.validate_password(password)
+        return True, ""
+    except Exception as e:
+        return False, str(e)
 
 
 def create_pydantic_validators():
