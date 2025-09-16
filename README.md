@@ -6,7 +6,7 @@
 
 1. Start the docker-compose stack
 
-   The backend require Redis which can be started together using `docker-compose`.
+   The backend require Redis and Postgres which can be started together using `docker-compose`.
 
    ```bash
    docker compose -p madcrow up -d
