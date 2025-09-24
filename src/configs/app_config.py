@@ -7,7 +7,7 @@ from pydantic_settings import (
 )
 
 from .deploy import DeploymentConfig
-from .enviornment import EnviornmentConfig
+from .enviornment import EnvironmentConfig
 from .packaging import PackagingConfig
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class MadcrowConfig(
     DeploymentConfig,
-    EnviornmentConfig,
+    EnvironmentConfig,
     # Packaging info
     PackagingConfig,
 ):
