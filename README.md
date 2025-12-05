@@ -40,9 +40,7 @@
    First, you need to add the uv package manager, if you don't have it already.
 
    ```bash
-   pip install uv
-   # Or on macOS
-   brew install uv
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
 5. Install dependencies
@@ -58,7 +56,7 @@
    uv run alembic upgrade head
    ```
 
-7. Start backend
+7. Start backend     
 
    ```bash
    uv run python main.py
