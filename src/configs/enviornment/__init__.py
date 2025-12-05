@@ -5,7 +5,7 @@ from .redis_config import RedisConfig
 from .security_config import SecurityConfig
 
 
-class EnviornmentConfig(
+class EnvironmentConfig(
     # place the configs in alphabet order
     HttpConfig,
     LoggingConfig,
